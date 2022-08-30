@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class VocabularyApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(VocabularyApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(VocabularyApplication.class, args);
+    }
 
 }
