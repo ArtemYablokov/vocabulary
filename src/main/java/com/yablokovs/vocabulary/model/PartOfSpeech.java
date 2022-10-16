@@ -11,12 +11,12 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-// TODO: 01.10.2022 check @DATA vs HIBERNATE
 @Data
-@Table(name = "word")
-public class Word {
+@Table(name = "part_of_speech")
+public class PartOfSpeech {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "sequence_generator")
     private Long id;
 
@@ -24,5 +24,6 @@ public class Word {
     private String name;
 
     @OneToOne
-    private PartOfSpeech partOfSpeech;
+    private Word word;
+
 }

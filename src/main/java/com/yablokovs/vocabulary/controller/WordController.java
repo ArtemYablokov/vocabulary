@@ -17,45 +17,37 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-public class Controller {
+public class WordController {
 
     private final WordService wordService;
 
-    public Controller(WordService wordService) {
+    public WordController(WordService wordService) {
         this.wordService = wordService;
     }
 
     @GetMapping("/find")
     public ResponseEntity<List<String>> findWord(@RequestParam String prefix) {
-
-        Word wordByName = wordService.getWordByName(prefix);
-
+        // imitation of using DB
         Map<String, List<String>> vocabulary = new HashMap<>();
-
         vocabulary.put("w", List.of("n-th letter of english alphabet", "other"));
         vocabulary.put("word", List.of("indivisible part of sentence", "other"));
-
         List<String> result = vocabulary.get(prefix);
+
+        List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/add")
-    public ResponseEntity<String> addWord(@RequestBody WordResponse word) {
-
+    public ResponseEntity<String> addWord(@RequestBody WordRequest word) {
+        // imitation of using DB
         Map<String, List<String>> vocabulary = new HashMap<>();
-
         vocabulary.put("w", List.of("n-th letter of english alphabet", "other"));
         vocabulary.put("word", List.of("indivisible part of sentence", "other"));
 
-
         Word word1 = new Word();
-
-
         word1.setName(word.name);
-
         wordService.saveWord(word1);
-
         return new ResponseEntity<>("result", HttpStatus.OK);
     }
 
@@ -81,12 +73,12 @@ public class Controller {
         }
     }
 
-    private static class WordResponse {
+    private static class WordRequest {
 
         private String name;
         private String definition;
 
-        public WordResponse(String name, String definition) {
+        public WordRequest(String name, String definition) {
             this.name = name;
             this.definition = definition;
         }

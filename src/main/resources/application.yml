@@ -1,25 +1,25 @@
 #server:
 #  port: 8080
 
-
-#spring:
-#  datasource:
-#    password:
-#    username:
-#    url:
-#    driver-class-name:
-
 spring:
   h2:
     console:
       enabled: false
 
 application:
-  datasource:
-    url: jdbc:h2:mem:mydb
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
+  local:
+    datasource:
+      url: jdbc:h2:mem:mydb
+#      url: jdbc:h2:tcp://localhost:9092/mem:mydb
+      username: sa
+      password: password
+      driverClassName: org.h2.Driver
+  postgres:
+    datasource:
+      url:
+      username: vocabulary
+      password: vocabulary
+      driverClassName:
   hibernate:
-    hbm2ddlAuto: none
+    hbm2ddlAuto: update
     showSql: true

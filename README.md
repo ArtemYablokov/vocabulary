@@ -12,7 +12,7 @@ password
 application.hibernate.hbm2ddl.auto
 
 - *validate*: validate the schema, makes no changes to the database.
-- *update*: update the schema.
+- *update*: update the schema. (doesn't create new TABLEs ???)
 - *create*: creates the schema, destroying previous data.
 - *create-drop*: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
 - *none*: does nothing with the schema, makes no changes to the database

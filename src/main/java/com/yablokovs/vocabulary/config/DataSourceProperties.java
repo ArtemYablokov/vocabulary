@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "application.datasource", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "application.local.datasource", ignoreUnknownFields = false)
 public class DataSourceProperties {
     private String username;
     private String password;

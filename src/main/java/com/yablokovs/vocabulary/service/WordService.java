@@ -2,6 +2,8 @@ package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.WordRepository;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,11 +15,17 @@ public class WordService {
         this.wordRepository = wordRepository;
     }
 
-    public Word getWordByName(String name){
-        return wordRepository.findByName(name).orElseThrow(RuntimeException::new);
+    public List<Word> findAllWords() {
+        return wordRepository.findAll();
     }
 
-    public Word saveWord(Word word){
-        return wordRepository.save(word);
+    public void saveWord(Word word) {
+        wordRepository.save(word);
+    }
+
+    public List<Word> getAllWordsByPrefix(String prefix) {
+        // TODO: 16.10.2022 IMPLEMENT
+        // return wordRepository.findByName(name).orElseThrow(RuntimeException::new); OPTIONAL???
+        return new ArrayList<>();
     }
 }
