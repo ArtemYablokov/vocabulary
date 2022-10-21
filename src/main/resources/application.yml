@@ -16,10 +16,10 @@ application:
       driverClassName: org.h2.Driver
   postgres:
     datasource:
-      url:
+      url: jdbc:postgresql://localhost:5432/vocabulary
       username: vocabulary
       password: vocabulary
-      driverClassName:
+      driverClassName: org.postgresql.Driver
   hibernate:
     hbm2ddlAuto: update
     showSql: true
