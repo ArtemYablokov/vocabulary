@@ -1,14 +1,10 @@
 package com.yablokovs.vocabulary.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 // TODO: 01.10.2022 check @DATA vs HIBERNATE
@@ -16,6 +12,7 @@ import lombok.Data;
 @Table(name = "word")
 public class Word {
     @Id
+    // TODO: 20.10.2022 generators
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
     @SequenceGenerator(name = "sequence_generator")
     private Long id;
@@ -23,6 +20,36 @@ public class Word {
     @Column(name = "name")
     private String name;
 
-    @OneToOne
-    private PartOfSpeech partOfSpeech;
+    @Column
+    private Long numberOfSearches;
+
+    // one directional - maybe from other side? надо проверить - должно быть интересно
+    // если поиск по definition - тогда не Embedded !
+    @OneToMany
+    List<Definition> definitions;
+
+    @ManyToMany
+    List<Word> synonyms;
+
+    @ManyToMany
+    List<WordRus> synonymsRus;
+
+    @ManyToMany
+    List<Phrase> phrases;
+
+    @ManyToMany
+    List<Tags> tags;
+
+    @Column
+    Timestamp createdAt;
+
+    @Column
+    Timestamp updatedAt;
+
+    // не Embedded тк будет поиск по периоду поиска
+    @Embedded
+    List<Timestamp> searchedAt;
+
+
+
 }
