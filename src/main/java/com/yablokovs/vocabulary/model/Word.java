@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -23,22 +24,8 @@ public class Word {
     @Column
     private Long numberOfSearches;
 
-    // one directional - maybe from other side? надо проверить - должно быть интересно
-    // если поиск по definition - тогда не Embedded !
     @OneToMany
-    List<Definition> definitions;
-
-    @ManyToMany
-    List<Word> synonyms;
-
-    @ManyToMany
-    List<WordRus> synonymsRus;
-
-    @ManyToMany
-    List<Phrase> phrases;
-
-    @ManyToMany
-    List<Tags> tags;
+    List<PartOfSpeech> partOfSpeeches;
 
     @Column
     Timestamp createdAt;
@@ -47,9 +34,8 @@ public class Word {
     Timestamp updatedAt;
 
     // не Embedded тк будет поиск по периоду поиска
-    @Embedded
-    List<Timestamp> searchedAt;
-
-
+//    @Embedded 'Embedded' attribute type should not be a container
+    @OneToMany
+    List<Date> searchedAt;
 
 }
