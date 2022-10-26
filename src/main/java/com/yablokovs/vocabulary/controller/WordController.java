@@ -1,10 +1,11 @@
 package com.yablokovs.vocabulary.controller;
 
 import com.yablokovs.vocabulary.model.Word;
-import com.yablokovs.vocabulary.service.WordService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WordController {
 
-    private final WordService wordService;
+    // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
+    private final WordServiceInterface wordService;
 
-    public WordController(WordService wordService) {
+    public WordController(WordServiceInterface wordService) {
         this.wordService = wordService;
     }
 

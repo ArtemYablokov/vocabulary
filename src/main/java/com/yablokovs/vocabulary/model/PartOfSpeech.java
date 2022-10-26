@@ -15,6 +15,9 @@ public class PartOfSpeech {
     @Column(name = "name")
     private String name;
 
+    @ManyToOne
+    Word word;
+
     // one directional - maybe from other side? надо проверить - должно быть интересно
     // если поиск по definition - тогда не Embedded !
     @OneToMany

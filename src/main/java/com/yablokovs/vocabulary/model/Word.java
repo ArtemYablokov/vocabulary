@@ -24,6 +24,7 @@ public class Word {
     @Column
     private Long numberOfSearches;
 
+    // TODO: 26.10.2022 should not create separate table ! mappedBy?
     @OneToMany
     List<PartOfSpeech> partOfSpeeches;
 
@@ -36,6 +37,6 @@ public class Word {
     // не Embedded тк будет поиск по периоду поиска
 //    @Embedded 'Embedded' attribute type should not be a container
     @OneToMany
-    List<Date> searchedAt;
+    List<WhenSearched> searchedAt;
 
 }

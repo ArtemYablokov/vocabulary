@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class LiquibaseConfig {
@@ -13,6 +14,9 @@ public class LiquibaseConfig {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setChangeLog("classpath:liquibase/master.xml");
         liquibase.setDataSource(dataSource);
+
+        liquibase.setShouldRun(false);
+
         return liquibase;
     }
 }

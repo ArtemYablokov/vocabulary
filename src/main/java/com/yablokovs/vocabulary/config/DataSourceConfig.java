@@ -71,7 +71,7 @@ public class DataSourceConfig {
 
     // TODO: 16.10.2022 remove to TEST config class - looks like necessary only for test context
     // with it, we can use declarative @Transactional
-    @Bean
+//    @Bean
     JpaTransactionManager transactionManager() {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
