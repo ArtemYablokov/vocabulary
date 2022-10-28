@@ -22,7 +22,15 @@ public class WordService implements WordServiceInterface {
     }
 
     @Override
-    public void saveWord(Word word) {
+    public void saveNewWord(Word word) {
+        word.setNumberOfSearches(1L);
+        wordRepository.save(word);
+    }
+
+    @Override
+    public void updateWord(Word word) {
+        Long numberOfSearches = word.getNumberOfSearches();
+        word.setNumberOfSearches(++numberOfSearches);
         wordRepository.save(word);
     }
 

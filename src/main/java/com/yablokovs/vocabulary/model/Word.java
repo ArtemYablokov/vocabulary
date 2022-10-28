@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,9 +23,10 @@ public class Word {
     @Column
     private Long numberOfSearches;
 
-    // TODO: 26.10.2022 should not create separate table ! mappedBy?
-    @OneToMany
-    List<PartOfSpeech> partOfSpeeches;
+    // TODO: 26.10.2022 should not create separate table ! mappedBy?“
+    //  The mappedBy attribute characterizes a bidirectional association and must be set on the parent-side”
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "word", orphanRemoval = true)
+    List<Part> parts;
 
     @Column
     Timestamp createdAt;
@@ -36,7 +36,9 @@ public class Word {
 
     // не Embedded тк будет поиск по периоду поиска
 //    @Embedded 'Embedded' attribute type should not be a container
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "word", orphanRemoval = true)
     List<WhenSearched> searchedAt;
 
+    @ManyToMany(mappedBy = "words")
+    List<Tags> tags;
 }

@@ -1,19 +1,17 @@
 package com.yablokovs.vocabulary.controller;
 
+import com.yablokovs.vocabulary.mdto.front.WordDto;
+import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -22,9 +20,11 @@ public class WordController {
 
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
+    private final WordMapper wordMapper;
 
-    public WordController(WordServiceInterface wordService) {
+    public WordController(WordServiceInterface wordService, WordMapper wordMapper1) {
         this.wordService = wordService;
+        this.wordMapper = wordMapper1;
     }
 
     @GetMapping("/find")
@@ -40,16 +40,10 @@ public class WordController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/add")
-    public ResponseEntity<String> addWord(@RequestBody WordRequest word) {
-        // imitation of using DB
-        Map<String, List<String>> vocabulary = new HashMap<>();
-        vocabulary.put("w", List.of("n-th letter of english alphabet", "other"));
-        vocabulary.put("word", List.of("indivisible part of sentence", "other"));
-
-        Word word1 = new Word();
-        word1.setName(word.name);
-        wordService.saveWord(word1);
+    @PutMapping("/new")
+    public ResponseEntity<String> newWord(@RequestBody WordDto wordDto) {
+        Word word = wordMapper.toWord(wordDto);
+        wordService.saveNewWord(word);
         return new ResponseEntity<>("result", HttpStatus.OK);
     }
 
@@ -72,33 +66,6 @@ public class WordController {
 
         public void text() {
             log.info("\n");
-        }
-    }
-
-    private static class WordRequest {
-
-        private String name;
-        private String definition;
-
-        public WordRequest(String name, String definition) {
-            this.name = name;
-            this.definition = definition;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDefinition() {
-            return definition;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setDefinition(String definition) {
-            this.definition = definition;
         }
     }
 }

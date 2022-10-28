@@ -7,7 +7,9 @@ import java.util.List;
 public interface WordServiceInterface {
     List<Word> findAllWords();
 
-    void saveWord(Word word);
+    void saveNewWord(Word word);
+
+    void updateWord(Word word);
 
     List<Word> getAllWordsByPrefix(String prefix);
 }

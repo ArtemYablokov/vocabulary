@@ -1,10 +1,13 @@
 package com.yablokovs.vocabulary.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class PartOfSpeech {
+@Data
+public class Part {
 
     @Id
     // TODO: 20.10.2022 generators
@@ -15,24 +18,26 @@ public class PartOfSpeech {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_id")
     Word word;
 
     // one directional - maybe from other side? надо проверить - должно быть интересно
     // если поиск по definition - тогда не Embedded !
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "part", orphanRemoval = true)
     List<Definition> definitions;
 
     @ManyToMany
-    List<Word> synonyms;
+    @JoinTable(name = "part_synonym_antonym")
+    List<Part> synonyms;
 
     @ManyToMany
+    @JoinTable(name = "part_synonym_antonym")
+    List<Part> antonyms;
+
+    // Associations marked as mappedBy must not define database mappings like @JoinTable or @JoinColumn
+    @ManyToMany
+    @JoinTable(name = "rus_eng_synonym")
     List<WordRus> synonymsRus;
 
-    @ManyToMany // если для одного слова изм фраза и удалено как раз второе слово, из которого идет ссылка?
-            // тогда нужен явный функционал добавления фразы к слову - отдельной кнопкой при создании фразы :) -> ManyToMany
-    List<Phrase> phrases;
-
-    @ManyToMany
-    List<Tags> tags;
 }

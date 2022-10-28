@@ -2,11 +2,6 @@ package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.config.DataSourceConfig;
 import com.yablokovs.vocabulary.model.Word;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
-import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 //@SpringBootTest - try to test without a SpringBOOT test context
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +36,7 @@ public class WordServiceTest {
     public void testSaveWord() {
         Word word = new Word();
         word.setName("from test");
-        wordService.saveWord(word);
+        wordService.saveNewWord(word);
 
         //entityManager.persist(word);
 

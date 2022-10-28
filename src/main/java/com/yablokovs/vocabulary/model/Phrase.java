@@ -1,10 +1,13 @@
 package com.yablokovs.vocabulary.model;
 
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Data
 public class Phrase {
 
     @Id
@@ -17,5 +20,6 @@ public class Phrase {
     private String name;
 
     @ManyToMany // фразы точно должны быть связаны с частями речи! +++
-    List<PartOfSpeech> words;
+    /*(mappedBy = "phrases")*/      // Illegal use of mappedBy on both sides of the relationship: com.yablokovs.vocabulary.model.PartOfSpeech.phrases
+    List<Definition> definitions;
 }

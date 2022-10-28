@@ -1,9 +1,12 @@
 package com.yablokovs.vocabulary.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Data
 public class Tags {
 
     @Id
@@ -16,5 +19,5 @@ public class Tags {
     private String name;
 
     @ManyToMany
-    List<Word> synonyms;
+    List<Word> words;
 }
