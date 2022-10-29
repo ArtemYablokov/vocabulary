@@ -1,4 +1,4 @@
-package com.yablokovs.vocabulary.controller;
+package com.yablokovs.vocabulary.rest;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

@@ -1,10 +1,13 @@
-package com.yablokovs.vocabulary.controller;
+package com.yablokovs.vocabulary.rest;
 
 import com.yablokovs.vocabulary.mdto.front.WordDto;
 import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
+import com.yablokovs.vocabulary.model.Phrase;
 import com.yablokovs.vocabulary.model.Word;
+import com.yablokovs.vocabulary.repo.PhraseRepository;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +25,12 @@ public class WordController {
     private final WordServiceInterface wordService;
     private final WordMapper wordMapper;
 
-    public WordController(WordServiceInterface wordService, WordMapper wordMapper1) {
+    @Autowired
+    PhraseRepository phraseRepository;
+
+    public WordController(WordServiceInterface wordService, WordMapper wordMapper) {
         this.wordService = wordService;
-        this.wordMapper = wordMapper1;
+        this.wordMapper = wordMapper;
     }
 
     @GetMapping("/find")

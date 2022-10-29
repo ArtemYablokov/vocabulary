@@ -22,7 +22,8 @@ public class Definition {
     @JoinColumn(name = "part_id")
     Part part;
 
-    @ManyToMany(mappedBy = "definitions")// если для одного слова изм фраза и удалено как раз второе слово, из которого идет ссылка?
-    // тогда нужен явный функционал добавления фразы к слову - отдельной кнопкой при создании фразы :) -> ManyToMany
-    List<Phrase> phrases;
+    // TODO: 28.10.2022 BUG phrases are not saving
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)// если для одного слова изм фраза и удалено как раз второе слово, из которого идет ссылка?
+            // тогда нужен явный функционал добавления фразы к слову - отдельной кнопкой при создании фразы :) -> ManyToMany
+            List<Phrase> phrases;
 }

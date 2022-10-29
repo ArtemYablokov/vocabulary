@@ -19,6 +19,6 @@ public class Prefix {
     private String name;
 
     // точно односторонняя связь - словам не нужно знать о префиксах)))
-    @ManyToMany // не OneToMany тк у одного слова не один префикс
+    @ManyToMany (mappedBy = "prefixes")// не OneToMany тк у одного слова не один префикс
     List<Word> words;
 }

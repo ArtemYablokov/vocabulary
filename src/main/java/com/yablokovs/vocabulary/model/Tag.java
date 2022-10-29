@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Tags {
+public class Tag {
 
     @Id
     // TODO: 20.10.2022 generators

@@ -24,7 +24,7 @@ public class Part {
 
     // one directional - maybe from other side? надо проверить - должно быть интересно
     // если поиск по definition - тогда не Embedded !
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "part", orphanRemoval = true)
+    @OneToMany(mappedBy = "part", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
     List<Definition> definitions;
 
     @ManyToMany
