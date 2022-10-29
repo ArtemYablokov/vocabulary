@@ -2,9 +2,9 @@ package com.yablokovs.vocabulary.rest;
 
 import com.yablokovs.vocabulary.mdto.front.WordDto;
 import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
-import com.yablokovs.vocabulary.model.Phrase;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PhraseRepository;
+import com.yablokovs.vocabulary.service.PrefixService;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,16 @@ public class WordController {
 
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
+
+    private final PrefixService prefixService;
     private final WordMapper wordMapper;
 
     @Autowired
     PhraseRepository phraseRepository;
 
-    public WordController(WordServiceInterface wordService, WordMapper wordMapper) {
+    public WordController(WordServiceInterface wordService, PrefixService prefixService, WordMapper wordMapper) {
         this.wordService = wordService;
+        this.prefixService = prefixService;
         this.wordMapper = wordMapper;
     }
 
@@ -50,6 +53,9 @@ public class WordController {
     public ResponseEntity<String> newWord(@RequestBody WordDto wordDto) {
         Word word = wordMapper.toWord(wordDto);
         wordService.saveNewWord(word);
+
+        prefixService.synchronisePrefixesForWord(word.getName());
+
         return new ResponseEntity<>("result", HttpStatus.OK);
     }
 

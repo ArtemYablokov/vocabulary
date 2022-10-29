@@ -27,10 +27,7 @@ public class WordService implements WordServiceInterface {
         word.setNumberOfSearches(1L);
         setWordAndPartParents(word);
 
-        List<Prefix> prefixes = getPrefixesFromWord(word);
-
         // TODO: 28.10.2022 prefixes shouldn't be set to Word -> before saving each prefix should check if it already exists in DB
-        word.setPrefixes(prefixes);
 
         wordRepository.save(word);
     }

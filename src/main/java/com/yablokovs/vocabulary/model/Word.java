@@ -47,7 +47,7 @@ public class Word {
     @ManyToMany(mappedBy = "words")
     List<Tag> tags;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    List<Prefix> prefixes;
+//    @ManyToMany(cascade = CascadeType.PERSIST)
+//    List<Prefix> prefixes;
 
 }
