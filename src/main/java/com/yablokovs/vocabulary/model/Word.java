@@ -1,7 +1,7 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.Getter;
+import lombok.Setter;import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -9,11 +9,12 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 // TODO: 01.10.2022 check @DATA vs HIBERNATE
 @EntityListeners(AuditingEntityListener.class)
-@Data
+@Getter @Setter
 @Table(name = "word")
 public class Word {
     @Id
@@ -39,7 +40,6 @@ public class Word {
     @LastModifiedDate
     Timestamp updatedAt;
 
-    // не Embedded тк будет поиск по периоду поиска
 //    @Embedded 'Embedded' attribute type should not be a container
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
     List<WhenSearched> searchedAt;
@@ -47,7 +47,18 @@ public class Word {
     @ManyToMany(mappedBy = "words")
     List<Tag> tags;
 
-//    @ManyToMany(cascade = CascadeType.PERSIST)
-//    List<Prefix> prefixes;
+    // redundant - not adding PREFIX to word anywhere. Don't need to get PREFIXES from WORD
+    @ManyToMany(mappedBy = "words")
+    Set<Prefix> prefixes;
 
+    @Override
+    public String toString() {
+        return "Word{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", numberOfSearches=" + numberOfSearches +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

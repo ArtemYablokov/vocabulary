@@ -1,12 +1,14 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class WhenSearched {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,4 +21,13 @@ public class WhenSearched {
 
     @Column
     Timestamp createdAt;
+
+    @Override
+    public String toString() {
+        return "WhenSearched{" +
+                "id=" + id +
+                ", word=" + word +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

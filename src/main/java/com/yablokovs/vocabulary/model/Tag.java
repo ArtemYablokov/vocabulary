@@ -1,12 +1,14 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Tag {
 
     @Id
@@ -20,4 +22,12 @@ public class Tag {
 
     @ManyToMany
     List<Word> words;
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

@@ -1,13 +1,15 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Phrase {
 
     @Id
@@ -16,7 +18,7 @@ public class Phrase {
     @SequenceGenerator(name = "sequence_generator")
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name")
     private String name;
 
 //    @ManyToMany(mappedBy = "phrases") // фразы точно должны быть связаны с частями речи! +++
@@ -24,6 +26,15 @@ public class Phrase {
 
     @ManyToMany(mappedBy = "phrases")
     List<Definition> definitions;
+
+
+    @Override
+    public String toString() {
+        return "Phrase{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {

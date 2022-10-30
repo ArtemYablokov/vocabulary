@@ -54,8 +54,7 @@ public class WordController {
         Word word = wordMapper.toWord(wordDto);
         wordService.saveNewWord(word);
 
-        prefixService.synchronisePrefixesForWord(word.getName());
-
+        prefixService.synchronisePrefixesForWordWithoutAddingWordToPrefixSet(word);
         return new ResponseEntity<>("result", HttpStatus.OK);
     }
 

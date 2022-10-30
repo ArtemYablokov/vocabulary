@@ -1,8 +1,8 @@
 package com.yablokovs.vocabulary.mdto.front;
 
-import lombok.Data;
-
-@Data
+import lombok.Getter;
+import lombok.Setter;
+@Getter @Setter
 public class PhraseDto {
     private String name;
 

@@ -1,16 +1,16 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class WordRus {
 
-    @ManyToMany(mappedBy = "synonymsRus")
-    List<Part> synonymsEng;
     @Id
     // TODO: 20.10.2022 generators
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
@@ -18,4 +18,15 @@ public class WordRus {
     private Long id;
     @Column(name = "name")
     private String name;
+
+    @ManyToMany(mappedBy = "synonymsRus")
+    List<Part> synonymsEng;
+
+    @Override
+    public String toString() {
+        return "WordRus{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

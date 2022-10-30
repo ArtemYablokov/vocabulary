@@ -1,12 +1,14 @@
 package com.yablokovs.vocabulary.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Definition {
 
     @Id
@@ -26,4 +28,13 @@ public class Definition {
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)// если для одного слова изм фраза и удалено как раз второе слово, из которого идет ссылка?
             // тогда нужен явный функционал добавления фразы к слову - отдельной кнопкой при создании фразы :) -> ManyToMany
             List<Phrase> phrases;
+
+    @Override
+    public String toString() {
+        return "Definition{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", part=" + part +
+                '}';
+    }
 }

@@ -1,9 +1,9 @@
 package com.yablokovs.vocabulary.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Getter;
+import lombok.Setter;import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Data
+@Getter @Setter
 @ConfigurationProperties(prefix = "application.hibernate", ignoreUnknownFields = false)
 public class HibernateProperties {
     private String hbm2ddlAuto;

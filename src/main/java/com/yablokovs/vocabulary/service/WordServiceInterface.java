@@ -7,7 +7,7 @@ import java.util.List;
 public interface WordServiceInterface {
     List<Word> findAllWords();
 
-    void saveNewWord(Word word);
+    Word saveNewWord(Word word);
 
     void updateWord(Word word);
 
