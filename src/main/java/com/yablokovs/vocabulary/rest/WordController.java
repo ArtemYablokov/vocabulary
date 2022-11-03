@@ -1,6 +1,6 @@
 package com.yablokovs.vocabulary.rest;
 
-import com.yablokovs.vocabulary.mdto.front.WordDto;
+import com.yablokovs.vocabulary.mdto.front.WordRequest;
 import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PhraseRepository;
@@ -23,7 +23,6 @@ public class WordController {
 
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
-
     private final PrefixService prefixService;
     private final WordMapper wordMapper;
 
@@ -50,9 +49,11 @@ public class WordController {
     }
 
     @PutMapping("/new")
-    public ResponseEntity<String> newWord(@RequestBody WordDto wordDto) {
-        Word word = wordMapper.toWord(wordDto);
+    public ResponseEntity<String> newWord(@RequestBody WordRequest wordRequest) {
+        Word word = wordMapper.toWord(wordRequest);
         wordService.saveNewWord(word);
+
+        wordService.coupleSynonyms(wordRequest, word);
 
         prefixService.synchronisePrefixesForWordWithoutAddingWordToPrefixSet(word);
         return new ResponseEntity<>("result", HttpStatus.OK);

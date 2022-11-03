@@ -6,7 +6,7 @@ import java.util.List;
 
 
 @Getter @Setter
-public class WordDto {
+public class WordRequest {
 
     private String name;
 

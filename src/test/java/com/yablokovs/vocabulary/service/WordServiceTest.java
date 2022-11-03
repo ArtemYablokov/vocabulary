@@ -68,7 +68,7 @@ public class WordServiceTest {
     @Autowired
     DefinitionRepository definitionRepository;
 
-    // todo Test is not valid - Hibernate use CONTEXT !
+    // todo Test is not valid - Hibernate use CONTEX - no, each time create SQL-query
     @Test
     public void testSaveDefinitionWithPhrase() {
 
@@ -81,6 +81,7 @@ public class WordServiceTest {
         Definition save = definitionRepository.save(entity);
 
         List<Definition> all = definitionRepository.findAll();
+        List<Definition> other = definitionRepository.findAll();
         Assert.assertEquals(1, all.size());
         Definition definition = all.get(0);
 

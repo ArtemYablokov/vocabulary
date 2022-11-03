@@ -1,9 +1,11 @@
 package com.yablokovs.vocabulary.config;
 
 import lombok.Getter;
-import lombok.Setter;import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Getter @Setter
+@Getter
+@Setter
 @ConfigurationProperties(prefix = "application.local.datasource", ignoreUnknownFields = false)
 public class DataSourceProperties {
     private String username;

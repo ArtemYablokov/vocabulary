@@ -26,8 +26,8 @@ public class PrefixService {
         prefixesFromWord.forEach(prefix -> {
             Optional<Prefix> prefixOptional = prefixRepository.findByName(prefix.getName());
             if (prefixOptional.isEmpty()) {
-                Prefix save = prefixRepository.save(prefix);
-                prefixToWordRepo.addWordsToPrefix(save.getId(), word.getId());
+                prefixRepository.save(prefix);
+                prefixToWordRepo.addWordsToPrefix(prefix.getId(), word.getId());
             } else {
                 prefixToWordRepo.addWordsToPrefix(prefixOptional.get().getId(), word.getId());
             }
@@ -36,6 +36,7 @@ public class PrefixService {
         });
     }
 
+    // TODO: 02.11.2022 extract to separate service
     private List<Prefix> getPrefixesFromWord(String wordName) {
         StringBuilder stringBuilder = new StringBuilder();
         List<Prefix> prefixes = new ArrayList<>();
@@ -52,6 +53,18 @@ public class PrefixService {
 
     // TODO: 28.10.2022 easy to optimise: 1 select prefix 2 if not exists - create(get ID) 3 add prefixID-WordID
     // DONE in synchronisePrefixesForWordWithoutAddingWordToPrefixSet(Word word)
+    private List<String> getStringPrefixesFromWord(String wordName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> prefixes = new ArrayList<>();
+
+        char[] chars = wordName.toCharArray();
+        for (char ch : chars) {
+            StringBuilder append = stringBuilder.append(ch);
+            prefixes.add(append.toString());
+        }
+        return prefixes;
+    }
+
     public void synchronisePrefixesForWord(Word word) {
         List<String> prefixesFromWord = getStringPrefixesFromWord(word.getName());
         prefixesFromWord.forEach(prefix -> {
@@ -70,18 +83,6 @@ public class PrefixService {
         });
     }
 
-
-    private List<String> getStringPrefixesFromWord(String wordName) {
-        StringBuilder stringBuilder = new StringBuilder();
-        List<String> prefixes = new ArrayList<>();
-
-        char[] chars = wordName.toCharArray();
-        for (char ch : chars) {
-            StringBuilder append = stringBuilder.append(ch);
-            prefixes.add(append.toString());
-        }
-        return prefixes;
-    }
 
     public void save(Prefix prefix) {
         prefixRepository.save(prefix);
