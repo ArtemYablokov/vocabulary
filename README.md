@@ -37,3 +37,8 @@ mvn liquibase:generateChangeLog -Dliquibase.diffTypes=data
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
+
+
+
+
+TODO: 03.11.2022 word can't be saved without part of speech 

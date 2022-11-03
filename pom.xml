@@ -84,10 +84,11 @@
 
 
         <!-- JUNIT -->
+        <!-- https://stackoverflow.com/questions/65686175/junit-test-error-org-junit-jupiter-api-extension-scriptevaluationexception -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
+            <version>5.6.2</version>
             <scope>test</scope>
         </dependency>
 

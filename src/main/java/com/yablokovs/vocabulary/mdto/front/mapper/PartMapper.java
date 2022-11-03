@@ -5,7 +5,7 @@ import com.yablokovs.vocabulary.model.Part;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {DefinitionMapper.class, PartMapper.class})
+@Mapper(componentModel = "spring", uses = {DefinitionMapper.class /*PartMapper.class*/})
 public abstract class PartMapper {
 
     @Mapping(ignore = true, target = "synonyms")
