@@ -53,6 +53,7 @@ public class WordService implements WordServiceInterface {
         return new ArrayList<>();
     }
 
+    // TODO: 15.11.2022 move this method to Synonym Api Service (decorator)
     @Override
     public void coupleSynonyms(WordRequest wordRequest, Word word) {
 
@@ -64,6 +65,7 @@ public class WordService implements WordServiceInterface {
         Map<String, List<Long>> newSynonyms = new HashMap<>();
         Map<String, List<Long>> existedSynonyms = new HashMap<>();
 
+        // TODO: 04.11.2022 bug -> not coupled a(c) with existed b(c)
         synonymService.prepareExistedAndNewPartOfSpeechIds(partOfSpeechToSynonym, newSynonyms, existedSynonyms);
 
         word.getParts().forEach(part -> newSynonyms.get(part.getName()).add(part.getId()));

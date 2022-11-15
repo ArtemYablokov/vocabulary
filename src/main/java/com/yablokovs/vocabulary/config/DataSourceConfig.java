@@ -96,6 +96,9 @@ public class DataSourceConfig {
         //If the value of this property is true, Hibernate writes all SQL
         //statements to the console.
         jpaProperties.put("hibernate.show_sql", hibernateProperties.getShowSql());
+        jpaProperties.put("hibernate.`format_sql`", hibernateProperties.getFormatSql());
+
+//        spring.jpa.properties.hibernate.format_ sql=true
 
         //If the value of this property is true, Hibernate will format the SQL
         //that is written to the console.

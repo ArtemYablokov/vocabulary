@@ -3,7 +3,7 @@ package com.yablokovs.vocabulary.service;
 import com.yablokovs.vocabulary.mdto.front.PartDto;
 import com.yablokovs.vocabulary.mdto.front.SynonymAntonymHolder;
 import com.yablokovs.vocabulary.mdto.front.WordRequest;
-import com.yablokovs.vocabulary.repo.PartRepository;
+import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.*;
 @SpringBootTest
 class SynonymServiceTest {
     @MockBean
-    PartRepository partRepository;
+    SynonymsRepo synonymsRepo;
 
     @Autowired
     SynonymService synonymService;
@@ -49,7 +49,7 @@ class SynonymServiceTest {
         existedSynonymToItsSynonym.put(5L, new HashSet<>(Set.of(3L, 6L, 32L)));
         existedSynonymToItsSynonym.put(6L, new HashSet<>(Set.of(3L, 5L, 32L)));
         existedSynonymToItsSynonym.forEach((key, set) -> {
-            Mockito.when(partRepository.findSynonymsByPartId(key)).thenReturn(existedSynonymToItsSynonym.get(key));
+            Mockito.when(synonymsRepo.findSynonymsByPartId(key)).thenReturn(existedSynonymToItsSynonym.get(key));
         });
 
         Map<String, List<Set<Long>>> actual = synonymService.filterExistedSynonymsToUniqueSets(partOfSpeeches, partOfSpeechToExistedSynonymAsPartId);

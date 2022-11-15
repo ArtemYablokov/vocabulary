@@ -6,6 +6,7 @@ import com.yablokovs.vocabulary.mdto.front.WordRequest;
 import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PartRepository;
+import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import com.yablokovs.vocabulary.repo.WordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -17,10 +18,12 @@ import java.util.stream.Collectors;
 public class SynonymService {
 
     private final WordRepository wordRepository;
+    private final SynonymsRepo synonymsRepo;
     private final PartRepository partRepository;
 
-    public SynonymService(WordRepository wordRepository, PartRepository partRepository) {
+    public SynonymService(WordRepository wordRepository, SynonymsRepo synonymsRepo, PartRepository partRepository) {
         this.wordRepository = wordRepository;
+        this.synonymsRepo = synonymsRepo;
         this.partRepository = partRepository;
     }
 
@@ -36,7 +39,7 @@ public class SynonymService {
                     existedSynonymsByPart.forEach(
                             existedSynonymId -> {
                                 if (!idExistsInList(setsOfUncoupledSynonyms, existedSynonymId)) {
-                                    Set<Long> synonymsOfSynonyms = partRepository.findSynonymsByPartId(existedSynonymId);
+                                    Set<Long> synonymsOfSynonyms = synonymsRepo.findSynonymsByPartId(existedSynonymId);
                                     synonymsOfSynonyms.add(existedSynonymId);
                                     setsOfUncoupledSynonyms.add(synonymsOfSynonyms);
                                 }
@@ -73,7 +76,6 @@ public class SynonymService {
                             if (existedPart.isPresent()) {
                                 existedSynonyms.add(existedPart.get().getId());
                             } else {
-//                                Long partId = partRepository.addPartToWord(partOfSpeech, existedWord.getId());
                                 Part part = new Part();
                                 part.setName(partOfSpeech);
                                 part.setWord(existedWord);
@@ -90,40 +92,18 @@ public class SynonymService {
     }
 
     private void createWordWithPartAndSynonym(String partOfSpeech, ArrayList<Long> newSynonyms, String syn) {
-        Word newSynonym = new Word();
-        newSynonym.setName(syn);
-        Part part = new Part();
-        part.setName(partOfSpeech);
-        newSynonym.setParts(Collections.singletonList(part));
+        Word newSynonym = new Word(syn);
+//        newSynonym.setNumberOfSearches(1L);
+        newSynonym.setParts(List.of(new Part(partOfSpeech)));
+        // TODO: 04.11.2022 create ParentService that will include Word and Synonym services
+        // or remove coupleSynonyms from WORD SERVICE to SynonymApiService
+        // so can ude wordService.saveNewWord
+//        part.setWord(newSynonym);
+
         Word save = wordRepository.save(newSynonym);
         Long partId = save.getParts().get(0).getId();
         newSynonyms.add(partId);
     }
-
-
-    // TODO: 03.11.2022 refactor method to split all repo calls
-//    Map<String, Set<Optional<Word>>> findInRepoSynonyms = new HashMap<>();
-//
-//        partOfSpeechToSynonym.forEach(
-//                (partOfSpeech, listSyn) ->
-//                        listSyn.forEach(syn -> {
-//                            // TODO: 03.11.2022 IMPLEMENT findAllByNames(List<String>)
-//                            Optional<Word> byName = wordRepository.findByName(syn);
-//                            Set<Optional<Word>> optionalSet = findInRepoSynonyms.get(partOfSpeech);
-//                            if (optionalSet == null) {
-//                                findInRepoSynonyms.put(partOfSpeech, new HashSet<>(Set.of(byName)));
-//                            } else {
-//                                optionalSet.add(byName);
-//                            }
-//                        }));
-//
-//        findInRepoSynonyms.forEach((part, optionalSet) -> {
-//            optionalSet.forEach(optionalWord -> {
-//                if (optionalWord.isEmpty()) {
-//
-//                }
-//            });
-//        });
 
     Map<String, List<String>> preparePartToSynonymMap(WordRequest wordRequest) {
         Map<String, List<String>> partOfSpeechToSynonym = new HashMap<>();
@@ -153,7 +133,9 @@ public class SynonymService {
                         Set<Long> next = iterator.next();
                         iterator.remove();
                         next.forEach(headId ->
-                                sets.forEach(childIdSet -> childIdSet.forEach(childId -> idTuples.add(new IdTuple(headId, childId))))
+                                sets.forEach(childIdSet ->
+                                        childIdSet.forEach(childId ->
+                                                idTuples.add(new IdTuple(headId, childId))))
                         );
                     }
 
@@ -203,13 +185,13 @@ public class SynonymService {
                 }
             }
         });
-        return null;
+        return idTuples;
     }
 
     public void coupleIds(Collection<IdTuple> idTuples) {
-        if (idTuples == null) return;
+        if (idTuples.isEmpty()) return;
         idTuples.forEach(idTuple -> {
-            partRepository.createReference(idTuple.getChild(), idTuple.getParent());
+            synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent());
         });
     }
 
@@ -229,7 +211,7 @@ public class SynonymService {
     private void crossCoupleExistedSynonyms(Collection<Long> synonymsIds, Collection<Long> synonymsIds1) {
         synonymsIds.forEach(id -> {
             synonymsIds1.forEach(childId -> {
-                partRepository.createReference(id, childId);
+                synonymsRepo.createReference(id, childId);
             });
         });
     }

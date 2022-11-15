@@ -7,6 +7,7 @@ import com.yablokovs.vocabulary.model.Phrase;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.DefinitionRepository;
 import com.yablokovs.vocabulary.repo.PartRepository;
+import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -8,4 +8,5 @@ import lombok.Setter;import org.springframework.boot.context.properties.Configur
 public class HibernateProperties {
     private String hbm2ddlAuto;
     private String showSql;
+    private String formatSql;
 }

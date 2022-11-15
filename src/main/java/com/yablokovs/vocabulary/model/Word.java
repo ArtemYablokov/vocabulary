@@ -1,7 +1,9 @@
 package com.yablokovs.vocabulary.model;
 
 import lombok.Getter;
-import lombok.Setter;import org.springframework.data.annotation.CreatedDate;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,7 +16,9 @@ import java.util.Set;
 @Entity
 // TODO: 01.10.2022 check @DATA vs HIBERNATE
 @EntityListeners(AuditingEntityListener.class)
-@Getter @Setter
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "word")
 public class Word {
     @Id
@@ -40,7 +44,7 @@ public class Word {
     @LastModifiedDate
     Timestamp updatedAt;
 
-//    @Embedded 'Embedded' attribute type should not be a container
+    //    @Embedded 'Embedded' attribute type should not be a container
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
     List<WhenSearched> searchedAt;
 
@@ -50,6 +54,10 @@ public class Word {
     // redundant - not adding PREFIX to word anywhere. Don't need to get PREFIXES from WORD
     @ManyToMany(mappedBy = "words")
     Set<Prefix> prefixes;
+
+    public Word(String name) {
+        this.name = name;
+    }
 
     @Override
     public String toString() {

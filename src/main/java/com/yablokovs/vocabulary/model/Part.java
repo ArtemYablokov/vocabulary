@@ -1,6 +1,7 @@
 package com.yablokovs.vocabulary.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Part {
 
     @Id
@@ -20,6 +22,7 @@ public class Part {
     @Column(name = "name")
     private String name;
 
+    // TODO: 15.11.2022 need a cheap way to get name from WORD
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id")
     Word word;
@@ -30,17 +33,26 @@ public class Part {
     List<Definition> definitions;
 
     @ManyToMany
-    @JoinTable(name = "part_synonym_antonym")
+    @JoinTable(name = "part_synonym",
+            joinColumns = @JoinColumn(name = "synonym_id"),
+            inverseJoinColumns = @JoinColumn(name = "part_id"))
     List<Part> synonyms;
 
     @ManyToMany
-    @JoinTable(name = "part_synonym_antonym")
+    @JoinTable(name = "part_antonym",
+            joinColumns = @JoinColumn(name = "antonym_id"),
+            inverseJoinColumns = @JoinColumn(name = "part_id"))
     List<Part> antonyms;
 
     // Associations marked as mappedBy must not define database mappings like @JoinTable or @JoinColumn
     @ManyToMany
     @JoinTable(name = "rus_eng_synonym")
     List<WordRus> synonymsRus;
+
+
+    public Part(String name) {
+        this.name = name;
+    }
 
     @Override
     public String toString() {
