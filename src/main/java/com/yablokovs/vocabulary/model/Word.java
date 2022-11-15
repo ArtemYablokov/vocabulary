@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class Word {
     // TODO: 26.10.2022 should not create separate table ! mappedBy?“
     //  The mappedBy attribute characterizes a bidirectional association and must be set on the parent-side”
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    List<Part> parts;
+    List<Part> parts = new ArrayList<>();
 
     @CreatedDate
     LocalDateTime createdAt;
@@ -58,6 +59,12 @@ public class Word {
     public Word(String name) {
         this.name = name;
     }
+
+    public void addPart(Part part) {
+        part.setWord(this);
+        parts.add(part);
+    }
+
 
     @Override
     public String toString() {
