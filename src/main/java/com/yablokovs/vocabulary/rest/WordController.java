@@ -5,6 +5,7 @@ import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PhraseRepository;
 import com.yablokovs.vocabulary.service.PrefixService;
+import com.yablokovs.vocabulary.service.SynonymServiceApi;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,16 @@ public class WordController {
 
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
+    private final SynonymServiceApi synonymServiceApi;
     private final PrefixService prefixService;
     private final WordMapper wordMapper;
 
     @Autowired
     PhraseRepository phraseRepository;
 
-    public WordController(WordServiceInterface wordService, PrefixService prefixService, WordMapper wordMapper) {
+    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, PrefixService prefixService, WordMapper wordMapper) {
         this.wordService = wordService;
+        this.synonymServiceApi = synonymServiceApi;
         this.prefixService = prefixService;
         this.wordMapper = wordMapper;
     }
@@ -51,9 +54,9 @@ public class WordController {
     @PutMapping("/new")
     public ResponseEntity<String> newWord(@RequestBody WordRequest wordRequest) {
         Word word = wordMapper.toWord(wordRequest);
-        wordService.saveNewWord(word);
+        wordService.saveNewWordWithPartsAndDefinitions(word);
 
-        wordService.coupleSynonyms(wordRequest, word);
+        synonymServiceApi.coupleSynonyms(wordRequest, word);
 
         prefixService.synchronisePrefixesForWordWithoutAddingWordToPrefixSet(word);
         return new ResponseEntity<>("result", HttpStatus.OK);

@@ -14,11 +14,15 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: 15.11.2022 make it private BEAN visibility
 @Service
 public class SynonymService {
 
+    // TODO: 15.11.2022 switch to service
     private final WordRepository wordRepository;
     private final SynonymsRepo synonymsRepo;
+
+    // TODO: 15.11.2022 switch to service
     private final PartRepository partRepository;
 
     public SynonymService(WordRepository wordRepository, SynonymsRepo synonymsRepo, PartRepository partRepository) {
@@ -93,11 +97,12 @@ public class SynonymService {
 
     private void createWordWithPartAndSynonym(String partOfSpeech, ArrayList<Long> newSynonyms, String syn) {
         Word newSynonym = new Word(syn);
-//        newSynonym.setNumberOfSearches(1L);
         newSynonym.setParts(List.of(new Part(partOfSpeech)));
+
         // TODO: 04.11.2022 create ParentService that will include Word and Synonym services
         // or remove coupleSynonyms from WORD SERVICE to SynonymApiService
-        // so can ude wordService.saveNewWord
+        // so can ude wordService.saveNewWord here - now it will be reference LOOP
+//        newSynonym.setNumberOfSearches(1L);
 //        part.setWord(newSynonym);
 
         Word save = wordRepository.save(newSynonym);
