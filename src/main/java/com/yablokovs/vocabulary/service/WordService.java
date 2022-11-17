@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class WordService implements WordServiceInterface {
@@ -58,5 +59,9 @@ public class WordService implements WordServiceInterface {
 
     public Optional<Word> findByName(String syn) {
         return wordRepository.findByName(syn);
+    }
+
+    public Set<Word> findAllWordsWithPartsBySynonymsStrings(Set<String> synonyms) {
+        return wordRepository.findAllByNameIn(synonyms);
     }
 }

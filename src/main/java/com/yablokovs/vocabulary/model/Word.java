@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class Word {
     // TODO: 26.10.2022 should not create separate table ! mappedBy?“
     //  The mappedBy attribute characterizes a bidirectional association and must be set on the parent-side”
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    List<Part> parts = new ArrayList<>();
+    Set<Part> parts = new HashSet<>();
 
     @CreatedDate
     LocalDateTime createdAt;

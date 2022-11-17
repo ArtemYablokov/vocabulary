@@ -1,7 +1,7 @@
 package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.mdto.front.PartDto;
-import com.yablokovs.vocabulary.mdto.front.SynonymAntonymHolder;
+import com.yablokovs.vocabulary.mdto.front.SynonymOrAntonymStringHolder;
 import com.yablokovs.vocabulary.mdto.front.WordRequest;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
@@ -63,13 +63,13 @@ class SynonymServiceTest {
     @Test
     void preparePartToSynonymMap() {
         WordRequest wordRequest = new WordRequest();
-        PartDto partDto1 = new PartDto("verb", List.of(new SynonymAntonymHolder("verb1"),
-                new SynonymAntonymHolder("verb2"), new SynonymAntonymHolder("verb3")));
-        PartDto partDto2 = new PartDto("noun", List.of(new SynonymAntonymHolder("noun1"),
-                new SynonymAntonymHolder("noun2")));
+        PartDto partDto1 = new PartDto("verb", List.of(new SynonymOrAntonymStringHolder("verb1"),
+                new SynonymOrAntonymStringHolder("verb2"), new SynonymOrAntonymStringHolder("verb3")));
+        PartDto partDto2 = new PartDto("noun", List.of(new SynonymOrAntonymStringHolder("noun1"),
+                new SynonymOrAntonymStringHolder("noun2")));
 
         wordRequest.setParts(List.of(partDto1, partDto2));
-        Map<String, List<String>> actual = synonymService.preparePartToSynonymMap(wordRequest);
+        Map<String, Set<String>> actual = synonymService.preparePartToSynonymMap(wordRequest);
 
 
         Map<String, List<String>> expected = new HashMap<>(
@@ -83,7 +83,7 @@ class SynonymServiceTest {
     void preparePartToSynonymMapEmpty() {
         WordRequest wordRequest = new WordRequest();
         wordRequest.setParts(Collections.emptyList());
-        Map<String, List<String>> actual = synonymService.preparePartToSynonymMap(wordRequest);
+        Map<String, Set<String>> actual = synonymService.preparePartToSynonymMap(wordRequest);
 
         Map<String, List<String>> expected = new HashMap<>();
 
