@@ -4,7 +4,10 @@ import com.yablokovs.vocabulary.mdto.front.WordRequest;
 import com.yablokovs.vocabulary.model.Word;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,19 +29,18 @@ public class SynonymServiceApi {
         // TODO: 03.11.2022 corner case when there is no synonyms
         Map<String, Set<String>> partOfSpeechToSynonym = synonymService.preparePartToSynonymMap(wordRequest);
 
-        Set<Word> allWordsWithPartsBySynonymsStrings =
-                wordService.findAllWordsWithPartsBySynonymsStrings(
-                        partOfSpeechToSynonym.values().stream().flatMap(Collection::stream).collect(Collectors.toSet()));
+        Set<String> collectSynonyms = partOfSpeechToSynonym.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        Set<Word> allWordsWithPartsBySynonymsStrings = wordService.findAllWordsWithPartsBySynonymsStrings(collectSynonyms);
 
         Map<String, List<Long>> existedSynonyms = synonymService.getExistedSynonymsIds(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
-        Map<String, List<Long>> wordIdsToBeAddedWithNewParts = synonymService.getWordIdsToBeAddedWithNewParts(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
-        Map<String, List<Word>> wordsToBeCreated = synonymService.getWordsToBeCreated(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
+        List<Word> wordsToBeAddedWithNewParts = synonymService.getWordsToBeAddedWithNewParts(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
+        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
 
+        List<Word> mergedNewWordsToBeSaved = synonymService.mergeNewWordsToBeSaved(wordsToBeAddedWithNewParts, wordsToBeCreated);
+        List<Word> savedWords = wordService.saveAllWords(mergedNewWordsToBeSaved);
+        Map<String, List<Long>> newSynonymsPartIds = synonymService.getNewPartIdsFromSavedWords(savedWords, partOfSpeechToSynonym);
 
-
-        Map<String, List<Long>> newSynonymsPartIds = synonymService.getNewSynonymsPartIds(wordIdsToBeAddedWithNewParts, wordsToBeCreated);
-
-        word.getParts().forEach(part -> newSynonymsPartIds.get(part.getName()).add(part.getId()));
+        synonymService.addNewWordPartsToNewSynonymsPartIds(word, newSynonymsPartIds);
 
         Map<String, List<Set<Long>>> partToExistedSynonymsUniqueSets = synonymService.filterExistedSynonymsToUniqueSets(partOfSpeechToSynonym.keySet(), existedSynonyms);
         Map<String, Set<Long>> partToExistedSynonymsToBeCoupledWithNew = synonymService.getExistedSynonymsToBeCoupledWithNew(partToExistedSynonymsUniqueSets);

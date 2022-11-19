@@ -64,4 +64,8 @@ public class WordService implements WordServiceInterface {
     public Set<Word> findAllWordsWithPartsBySynonymsStrings(Set<String> synonyms) {
         return wordRepository.findAllByNameIn(synonyms);
     }
+
+    public List<Word> saveAllWords(List<Word> mergedNewWordsToBeSaved) {
+        return wordRepository.saveAll(mergedNewWordsToBeSaved);
+    }
 }

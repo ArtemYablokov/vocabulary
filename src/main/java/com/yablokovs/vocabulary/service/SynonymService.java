@@ -18,15 +18,12 @@ import java.util.stream.Collectors;
 public class SynonymService {
 
     // TODO: 16.11.2022 remove both from here ???
-    private final WordService wordService;
     private final PartRepository partRepository;
-
 
     private final SynonymsRepo synonymsRepo;
 
 
     public SynonymService(WordService wordService, SynonymsRepo synonymsRepo, PartRepository partRepository) {
-        this.wordService = wordService;
         this.synonymsRepo = synonymsRepo;
         this.partRepository = partRepository;
     }
@@ -85,7 +82,7 @@ public class SynonymService {
                                 newSynonyms.add(part.getId());
                             }
                         } else {
-                            createWordWithPartAndSynonym(partOfSpeech, newSynonyms, syn);
+                            // createWordWithPartAndSynonym(partOfSpeech, newSynonyms, syn);
                         }
                     });
                     partOfSpeechToNewSynonymAsPartId.put(partOfSpeech, newSynonyms);
@@ -98,18 +95,18 @@ public class SynonymService {
         // newSynonym.setParts(List.of(new Part(partOfSpeech)));
         newSynonym.addPart(new Part(partOfSpeech));
 
-        // dont need to coupled parents with child, because its coupled with Word::addPart
+        // don't need to coupled parents with child, because its coupled with Word::addPart
 //        wordService.saveNewWordWithPartsAndDefinitions(newSynonym);
 //        part.setWord(newSynonym);
 
         // TODO: 15.11.2022 what if set 1 by default
         newSynonym.setNumberOfSearches(1L);
 
-        Word save = wordService.save(newSynonym);
-        Long partId = save.getParts().iterator().next().getId();
+        // Word save = wordService.save(newSynonym);
+        // Long partId = save.getParts().iterator().next().getId();
 
         // TODO: 15.11.2022 method shouldn't modify external data (newSynonyms)
-        newSynonyms.add(partId);
+        // newSynonyms.add(partId);
     }
 
     Map<String, Set<String>> preparePartToSynonymMap(WordRequest wordRequest) {
@@ -233,7 +230,6 @@ public class SynonymService {
         return posToExistedSynonymsIds;
     }
 
-    // TODO: 16.11.2022 rewrite method to return Words to save BEFORE it check that: 1 adding to existing Word works (by ID). 2 adding to collection execute One SQL 3 ids added to Parts when saving Word
     public Map<String, List<Long>> getWordIdsToBeAddedWithNewParts(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
         Map<String, List<Long>> posToNewSynonymsIds = new HashMap<>();
 
@@ -253,14 +249,34 @@ public class SynonymService {
         return posToNewSynonymsIds;
     }
 
-    //        synonyms.removeAll(existedWords.stream().map(Word::getName).collect(Collectors.toSet())); // O(n)
-    public Map<String, List<Word>> getWordsToBeCreated(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
-
-        Map<String, List<Word>> wordsToBeCreated = new HashMap<>();
+    // TODO: 16.11.2022 rewrite method to return Words to save BEFORE it check that: 1 adding to existing Word works (by ID) YES. 2 adding to collection execute One SQL NO 3 ids added to Parts when saving Word YES
+    public List<Word> getWordsToBeAddedWithNewParts(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
+        List<Word> wordsToBeUpdatedWithNewPart = new ArrayList<>();
 
         partOfSpeechToSynonym.forEach((partOfSpeech, synonyms) -> {
 
-            Map<String, Word> wordsToBeSaved = new HashMap<>();
+            synonyms.forEach(synonym -> {
+                allWordsWithPartsBySynonymsStrings.stream()
+                        .filter(w1 -> w1.getName().equals(synonym)
+                                && w1.getParts().stream().noneMatch(part -> part.getName().equals(partOfSpeech)))
+                        .findAny()
+                        .ifPresent(w -> {
+                            w.addPart(new Part(partOfSpeech));
+                            wordsToBeUpdatedWithNewPart.add(w);
+                        });
+            });
+        });
+
+        return wordsToBeUpdatedWithNewPart;
+    }
+
+    // TODO: 17.11.2022  synonyms.removeAll(existedWords.stream().map(Word::getName).collect(Collectors.toSet())); // O(n)
+    public List<Word> getWordsToBeCreated(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
+
+        Map<String, Word> wordsToBeSaved = new HashMap<>();
+
+        partOfSpeechToSynonym.forEach((partOfSpeech, synonyms) -> {
+
             synonyms.forEach(synonym -> {
                 boolean noneMatch = allWordsWithPartsBySynonymsStrings.stream().noneMatch(word -> word.getName().equals(synonym));
                 if (noneMatch) {
@@ -274,15 +290,40 @@ public class SynonymService {
                     }
                 }
             });
-            wordsToBeCreated.put(partOfSpeech, wordsToBeSaved.values().stream().toList());
         });
 
-        return wordsToBeCreated;
+        return wordsToBeSaved.values().stream().toList();
     }
 
-    public Map<String, List<Long>> getNewSynonymsPartIds(Map<String, List<Long>> wordIdsToBeAddedWithNewParts, Map<String, List<Word>> wordsToBeCreated) {
+    // TODO: 16.11.2022 save all words and return THEM. IDS of new parts will be retrieved later
+    public List<Word> mergeNewWordsToBeSaved(List<Word> wordsToBeAddedWithNewParts, List<Word> wordsToBeCreated) {
+        List<Word> allWordsToSave = new ArrayList<>();
 
-        // TODO: 16.11.2022 save all words and return IDS of new parts
-        return null;
+        allWordsToSave.addAll(wordsToBeAddedWithNewParts);
+        allWordsToSave.addAll(wordsToBeCreated);
+
+        return allWordsToSave;
+    }
+
+    public Map<String, List<Long>> getNewPartIdsFromSavedWords(List<Word> savedWords, Map<String, Set<String>> partOfSpeechToSynonym) {
+
+        Map<String, List<Long>> newSynonymsPartIds = new HashMap<>();
+
+        partOfSpeechToSynonym.forEach((partOfSpeech, synonyms) -> {
+            List<Long> partIds = new ArrayList<>();
+
+            synonyms.forEach(s -> {
+                Optional<Word> wordOptional = savedWords.stream().filter(w -> w.getName().equals(s)).findAny();
+                wordOptional.flatMap(word -> word.getParts().stream()
+                        .filter(p -> p.getName().equals(partOfSpeech))
+                        .findAny()).ifPresent(p -> partIds.add(p.getId()));
+            });
+            newSynonymsPartIds.put(partOfSpeech, partIds);
+        });
+        return newSynonymsPartIds;
+    }
+
+    public void addNewWordPartsToNewSynonymsPartIds(Word word, Map<String, List<Long>> newSynonymsPartIds) {
+        word.getParts().forEach(part -> newSynonymsPartIds.get(part.getName()).add(part.getId()));
     }
 }
