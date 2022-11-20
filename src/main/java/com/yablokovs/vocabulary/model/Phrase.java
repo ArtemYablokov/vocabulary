@@ -1,5 +1,6 @@
 package com.yablokovs.vocabulary.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +25,7 @@ public class Phrase {
 //    @ManyToMany(mappedBy = "phrases") // фразы точно должны быть связаны с частями речи! +++
     // Illegal use of mappedBy on both sides of the relationship: com.yablokovs.vocabulary.model.PartOfSpeech.phrases
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "phrases")
     List<Definition> definitions;
 

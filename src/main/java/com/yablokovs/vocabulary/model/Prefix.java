@@ -25,7 +25,7 @@ public class Prefix {
     @JoinTable(name = "prefixes_words",
             joinColumns = @JoinColumn(name = "prefix_id"),
             inverseJoinColumns = @JoinColumn(name = "word_id"))
-    public Set<Word> words;
+    private Set<Word> words;
 
     @Override
     public String toString() {

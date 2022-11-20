@@ -1,6 +1,8 @@
 package com.yablokovs.vocabulary.service;
 
+import com.yablokovs.vocabulary.model.Prefix;
 import com.yablokovs.vocabulary.model.Word;
+import com.yablokovs.vocabulary.repo.PrefixRepository;
 import com.yablokovs.vocabulary.repo.WordRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,11 @@ import java.util.Set;
 public class WordService implements WordServiceInterface {
 
     private final WordRepository wordRepository;
+    private final PrefixRepository prefixRepository;
 
-    public WordService(WordRepository wordRepository) {
+    public WordService(WordRepository wordRepository, PrefixRepository prefixRepository) {
         this.wordRepository = wordRepository;
+        this.prefixRepository = prefixRepository;
     }
 
     @Override
@@ -49,8 +53,10 @@ public class WordService implements WordServiceInterface {
     @Override
     public List<Word> getAllWordsByPrefix(String prefix) {
         // TODO: 16.10.2022 IMPLEMENT
-        // return wordRepository.findByName(name).orElseThrow(RuntimeException::new); OPTIONAL???
-        return new ArrayList<>();
+        List<Word> wordsByPrefix = new ArrayList<>();
+        Optional<Prefix> byName = prefixRepository.findByName(prefix);
+        byName.ifPresent(p -> wordsByPrefix.addAll(p.getWords())); // TODO: 18.11.2022 N+1
+        return wordsByPrefix;
     }
 
     public Word save(Word newSynonym) {

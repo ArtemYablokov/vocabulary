@@ -1,5 +1,6 @@
 package com.yablokovs.vocabulary.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class Part {
     private String name;
 
     // TODO: 15.11.2022 need a cheap way to get name from WORD
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id")
     Word word;

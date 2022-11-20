@@ -39,16 +39,11 @@ public class WordController {
     }
 
     @GetMapping("/find")
-    public ResponseEntity<List<String>> findWord(@RequestParam String prefix) {
-        // imitation of using DB
-        Map<String, List<String>> vocabulary = new HashMap<>();
-        vocabulary.put("w", List.of("n-th letter of english alphabet", "other"));
-        vocabulary.put("word", List.of("indivisible part of sentence", "other"));
-        List<String> result = vocabulary.get(prefix);
+    public ResponseEntity<List<Word>> findWord(@RequestParam String prefix) {
 
         List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(allWordsByPrefix, HttpStatus.OK);
     }
 
     @PutMapping("/new")

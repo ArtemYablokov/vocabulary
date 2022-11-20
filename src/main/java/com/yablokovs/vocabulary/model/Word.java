@@ -1,5 +1,6 @@
 package com.yablokovs.vocabulary.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,6 +55,7 @@ public class Word {
     List<Tag> tags;
 
     // redundant - not adding PREFIX to word anywhere. Don't need to get PREFIXES from WORD
+    @JsonIgnore
     @ManyToMany(mappedBy = "words")
     Set<Prefix> prefixes;
 
