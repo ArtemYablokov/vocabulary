@@ -1,8 +1,8 @@
 package com.yablokovs.vocabulary.service;
 
-import com.yablokovs.vocabulary.mdto.front.PartDto;
-import com.yablokovs.vocabulary.mdto.front.SynonymOrAntonymStringHolder;
-import com.yablokovs.vocabulary.mdto.front.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.PartDto;
+import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
+import com.yablokovs.vocabulary.mdto.request.WordRequest;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

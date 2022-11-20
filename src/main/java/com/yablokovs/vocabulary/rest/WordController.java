@@ -1,7 +1,7 @@
 package com.yablokovs.vocabulary.rest;
 
-import com.yablokovs.vocabulary.mdto.front.WordRequest;
-import com.yablokovs.vocabulary.mdto.front.mapper.WordMapper;
+import com.yablokovs.vocabulary.mdto.request.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PhraseRepository;
 import com.yablokovs.vocabulary.service.PrefixService;
@@ -13,9 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -43,18 +42,21 @@ public class WordController {
 
         List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
 
+        // TODO: 20.11.2022 not necessary to use mapping from PART to String for Synonyms
+//        List<WordRequest> wordRequests = allWordsByPrefix.stream().map(wordMapper::toWordRequest).collect(Collectors.toList());
+
         return new ResponseEntity<>(allWordsByPrefix, HttpStatus.OK);
     }
 
     @PutMapping("/new")
-    public ResponseEntity<String> newWord(@RequestBody WordRequest wordRequest) {
+    public ResponseEntity<?> newWord(@RequestBody WordRequest wordRequest) {
         Word word = wordMapper.toWord(wordRequest);
         wordService.saveNewWordWithPartsAndDefinitions(word);
 
         synonymServiceApi.coupleSynonyms(wordRequest, word);
 
         prefixService.synchronisePrefixesForWordWithoutAddingWordToPrefixSet(word);
-        return new ResponseEntity<>("result", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/health")

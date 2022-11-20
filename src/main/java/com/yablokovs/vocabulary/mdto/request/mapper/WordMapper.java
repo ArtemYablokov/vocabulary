@@ -1,6 +1,6 @@
-package com.yablokovs.vocabulary.mdto.front.mapper;
+package com.yablokovs.vocabulary.mdto.request.mapper;
 
-import com.yablokovs.vocabulary.mdto.front.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.WordRequest;
 import com.yablokovs.vocabulary.model.Word;
 import org.mapstruct.Mapper;
 
@@ -8,4 +8,7 @@ import org.mapstruct.Mapper;
 public abstract class WordMapper {
 
     public abstract Word toWord(WordRequest wordRequest);
+
+
+    public abstract WordRequest toWordRequest(Word word);
 }

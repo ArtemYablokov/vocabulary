@@ -1,4 +1,4 @@
-package com.yablokovs.vocabulary.mdto.front;
+package com.yablokovs.vocabulary.mdto.request;
 
 import lombok.*;
 

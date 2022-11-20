@@ -1,11 +1,13 @@
-package com.yablokovs.vocabulary.mdto.front;
+package com.yablokovs.vocabulary.mdto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 
-@Getter @Setter
+@Getter
+@Setter
 public class WordRequest {
 
     private String name;

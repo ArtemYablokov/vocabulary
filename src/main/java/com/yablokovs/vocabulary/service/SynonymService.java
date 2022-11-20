@@ -1,8 +1,8 @@
 package com.yablokovs.vocabulary.service;
 
 
-import com.yablokovs.vocabulary.mdto.front.SynonymOrAntonymStringHolder;
-import com.yablokovs.vocabulary.mdto.front.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
+import com.yablokovs.vocabulary.mdto.request.WordRequest;
 import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PartRepository;

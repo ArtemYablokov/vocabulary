@@ -1,6 +1,6 @@
-package com.yablokovs.vocabulary.mdto.front.mapper;
+package com.yablokovs.vocabulary.mdto.request.mapper;
 
-import com.yablokovs.vocabulary.mdto.front.DefinitionDto;
+import com.yablokovs.vocabulary.mdto.request.DefinitionDto;
 import com.yablokovs.vocabulary.model.Definition;
 import org.mapstruct.Mapper;
 
@@ -8,4 +8,6 @@ import org.mapstruct.Mapper;
 public abstract class DefinitionMapper {
 
     public abstract Definition toDefinition(DefinitionDto definitionDto);
+
+    public abstract DefinitionDto toDefinitionDto(Definition definition);
 }

@@ -1,6 +1,6 @@
-package com.yablokovs.vocabulary.mdto.front.mapper;
+package com.yablokovs.vocabulary.mdto.request.mapper;
 
-import com.yablokovs.vocabulary.mdto.front.PhraseDto;
+import com.yablokovs.vocabulary.mdto.request.PhraseDto;
 import com.yablokovs.vocabulary.model.Phrase;
 import org.mapstruct.Mapper;
 
@@ -8,4 +8,6 @@ import org.mapstruct.Mapper;
 public abstract class PhraseMapper {
 
     public abstract Phrase toPhrase(PhraseDto phraseDto);
+
+    public abstract PhraseDto toPhraseDto(Phrase phrase);
 }

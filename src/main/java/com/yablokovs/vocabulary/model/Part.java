@@ -34,6 +34,7 @@ public class Part {
     @OneToMany(mappedBy = "part", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
     List<Definition> definitions;
 
+    // TODO: BUG 20.11.2022 need to fetch
     @ManyToMany
     @JoinTable(name = "part_synonym",
             joinColumns = @JoinColumn(name = "synonym_id"),
