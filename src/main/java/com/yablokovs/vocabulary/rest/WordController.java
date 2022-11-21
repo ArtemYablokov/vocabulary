@@ -3,11 +3,10 @@ package com.yablokovs.vocabulary.rest;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
-import com.yablokovs.vocabulary.repo.PhraseRepository;
+import com.yablokovs.vocabulary.service.ExternalService;
 import com.yablokovs.vocabulary.service.SynonymServiceApi;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +23,13 @@ public class WordController {
     private final SynonymServiceApi synonymServiceApi;
     private final WordMapper wordMapper;
 
-    @Autowired
-    PhraseRepository phraseRepository;
+    private final ExternalService externalService;
 
-    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, WordMapper wordMapper) {
+    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, WordMapper wordMapper, ExternalService externalService) {
         this.wordService = wordService;
         this.synonymServiceApi = synonymServiceApi;
         this.wordMapper = wordMapper;
+        this.externalService = externalService;
     }
 
     @GetMapping("/find")
@@ -41,7 +40,9 @@ public class WordController {
         // TODO: 20.11.2022 necessary to use mapping from PART to String for Synonyms - because of Synonym RECURSION
         List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordRequest).toList();
 
-        return new ResponseEntity<>(wordResponse, HttpStatus.OK);
+        WordFrontEnd word = externalService.findWord(prefix);
+
+        return new ResponseEntity<>(List.of(word), HttpStatus.OK);
     }
 
     @PutMapping("/new")
@@ -55,24 +56,7 @@ public class WordController {
     }
 
     @GetMapping("/health")
-    public ResponseEntity<ResponseOk> healthCheck() {
-        return new ResponseEntity<>(new ResponseOk("ok message"), HttpStatus.OK);
-    }
-
-    private class ResponseOk {
-
-        private final String message;
-
-        public ResponseOk(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void text() {
-            log.info("\n");
-        }
+    public ResponseEntity<HttpStatus> healthCheck() {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
