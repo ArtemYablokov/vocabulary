@@ -26,19 +26,20 @@ import java.util.Set;
 public class Word {
     @Id
     // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
+//    @SequenceGenerator(name = "sequence_generator")
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @Column(name = "name")
     private String name;
 
     @Column
-    private Long numberOfSearches;
+    private Long numberOfSearches = 1L;
 
     // TODO: 26.10.2022 should not create separate table ! mappedBy?“
     //  The mappedBy attribute characterizes a bidirectional association and must be set on the parent-side”
-    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Part> parts = new HashSet<>();
 
     @CreatedDate
@@ -49,15 +50,15 @@ public class Word {
 
     //    @Embedded 'Embedded' attribute type should not be a container
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<WhenSearched> searchedAt;
+    List<WhenSearched> searchedAt = new ArrayList<>();
 
     @ManyToMany(mappedBy = "words")
-    List<Tag> tags;
+    List<Tag> tags = new ArrayList<>();
 
     // redundant - not adding PREFIX to word anywhere. Don't need to get PREFIXES from WORD
     @JsonIgnore
     @ManyToMany(mappedBy = "words")
-    Set<Prefix> prefixes;
+    Set<Prefix> prefixes = new HashSet<>();
 
     public Word(String name) {
         this.name = name;

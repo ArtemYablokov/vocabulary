@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,8 +16,9 @@ public class Phrase {
 
     @Id
     // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
+//    @SequenceGenerator(name = "sequence_generator")
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @Column(name = "name")
@@ -27,7 +29,7 @@ public class Phrase {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "phrases")
-    List<Definition> definitions;
+    List<Definition> definitions = new ArrayList<>();
 
 
     @Override

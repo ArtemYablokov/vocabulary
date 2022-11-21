@@ -52,6 +52,11 @@ public class SynonymsRepo {
         Query nativeQuery = entityManager.createNativeQuery(
                 "INSERT INTO part_synonym (synonym_id, part_id) VALUES ('" + id + "', '" + childId + "')");
         nativeQuery.executeUpdate();
+
+        Query nativeQuery2 = entityManager.createNativeQuery(
+                "INSERT INTO part_synonym (synonym_id, part_id) VALUES ('" + childId + "', '" + id + "')");
+        nativeQuery2.executeUpdate();
+
 //        entityManager.flush();
     }
 }

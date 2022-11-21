@@ -1,13 +1,10 @@
 package com.yablokovs.vocabulary.service;
 
-import com.yablokovs.vocabulary.mdto.request.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.model.Word;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,22 +21,32 @@ public class SynonymServiceApi {
         this.wordService = wordService;
     }
 
-    public void coupleSynonyms(WordRequest wordRequest, Word word) {
+    public void coupleSynonymsForNewWordFromRequest(WordFrontEnd wordFrontEnd, Word word) {
 
         // TODO: 03.11.2022 corner case when there is no synonyms
-        Map<String, Set<String>> partOfSpeechToSynonym = synonymService.preparePartToSynonymMap(wordRequest);
+        Map<String, Set<String>> partOfSpeechToSynonym = synonymService.getAllSynonymsStringSortedByPartOfSpeech(wordFrontEnd);
 
-        Set<String> collectSynonyms = partOfSpeechToSynonym.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-        Set<Word> allWordsWithPartsBySynonymsStrings = wordService.findAllWordsWithPartsBySynonymsStrings(collectSynonyms);
+        Set<String> unitedSynonymsFromAllParts = partOfSpeechToSynonym.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        // проверить что сюда приходят WORDS - только с PARTS???
+        // нет - приходит вся глубина вложенности...
+        Set<Word> wordsFromRepo = wordService.findAllWordsWithPartsBySynonymsStrings(unitedSynonymsFromAllParts);
 
-        Map<String, List<Long>> existedSynonyms = synonymService.getExistedSynonymsIds(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
-        List<Word> wordsToBeAddedWithNewParts = synonymService.getWordsToBeAddedWithNewParts(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
-        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(partOfSpeechToSynonym, allWordsWithPartsBySynonymsStrings);
+        Map<String, List<Long>> existedSynonyms = synonymService.getExistedSynonymsIds(partOfSpeechToSynonym, wordsFromRepo);
 
-        List<Word> mergedNewWordsToBeSaved = synonymService.mergeNewWordsToBeSaved(wordsToBeAddedWithNewParts, wordsToBeCreated);
-        List<Word> savedWords = wordService.saveAllWords(mergedNewWordsToBeSaved);
-        Map<String, List<Long>> newSynonymsPartIds = synonymService.getNewPartIdsFromSavedWords(savedWords, partOfSpeechToSynonym);
+        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(partOfSpeechToSynonym, wordsFromRepo);
+        List<Word> wordsToBeUpdatedWithNewParts = synonymService.getWordsToBeUpdatedWithNewParts(partOfSpeechToSynonym, wordsFromRepo);
 
+        List<Word> savedWords = wordService.saveAllNewWords(wordsToBeCreated);
+        List<Word> updatedWords = wordService.updateAllWords(wordsToBeUpdatedWithNewParts);
+
+
+        List<Word> wordsToGetNewPartIdsFrom = new ArrayList<>();
+        wordsToGetNewPartIdsFrom.addAll(savedWords);
+        wordsToGetNewPartIdsFrom.addAll(updatedWords);
+
+        Map<String, List<Long>> newSynonymsPartIds = synonymService.getNewPartIdsFromSavedWords(wordsToGetNewPartIdsFrom, partOfSpeechToSynonym);
+
+        // TODO: 20.11.2022 remove ALL COLLECTION MODIFICATION to helper service - to ease a burden on SynonymService
         synonymService.addNewWordPartsToNewSynonymsPartIds(word, newSynonymsPartIds);
 
         Map<String, List<Set<Long>>> partToExistedSynonymsUniqueSets = synonymService.filterExistedSynonymsToUniqueSets(partOfSpeechToSynonym.keySet(), existedSynonyms);

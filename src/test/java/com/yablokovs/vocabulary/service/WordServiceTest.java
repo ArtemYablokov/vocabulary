@@ -42,7 +42,7 @@ public class WordServiceTest {
     public void testSaveWord() {
         Word word = new Word();
         word.setName("from test");
-        wordService.saveNewWordWithPartsAndDefinitions(word);
+        wordService.saveNewWord(word);
 
         //entityManager.persist(word);
 

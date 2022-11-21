@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class WordRequest {
+public class WordFrontEnd {
 
     private String name;
 

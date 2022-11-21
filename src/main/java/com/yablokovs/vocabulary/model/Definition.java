@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,8 +15,9 @@ public class Definition {
 
     @Id
     // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
+//    @SequenceGenerator(name = "sequence_generator")
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @Column(name = "name")
@@ -31,7 +33,7 @@ public class Definition {
     // если для одного слова изм фраза и удалено как раз второе слово, из которого идет ссылка?
     // тогда нужен явный функционал добавления фразы к слову - отдельной кнопкой при создании фразы :) -> ManyToMany
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    List<Phrase> phrases;
+    List<Phrase> phrases = new ArrayList<>();
 
     @Override
     public String toString() {

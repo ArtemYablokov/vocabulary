@@ -23,6 +23,6 @@ public abstract class PartMapper {
 
     @SynonymsQualifier
     public List<SynonymOrAntonymStringHolder> mapSynonyms(List<Part> synonyms) {
-        return synonyms.stream().map(s -> new SynonymOrAntonymStringHolder(s.getName())).collect(Collectors.toList());
+        return synonyms.stream().map(s -> new SynonymOrAntonymStringHolder(s.getWord().getName())).collect(Collectors.toList());
     }
 }

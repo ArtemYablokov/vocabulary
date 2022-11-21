@@ -1,10 +1,9 @@
 package com.yablokovs.vocabulary.rest;
 
-import com.yablokovs.vocabulary.mdto.request.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PhraseRepository;
-import com.yablokovs.vocabulary.service.PrefixService;
 import com.yablokovs.vocabulary.service.SynonymServiceApi;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -24,38 +22,35 @@ public class WordController {
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
     private final SynonymServiceApi synonymServiceApi;
-    private final PrefixService prefixService;
     private final WordMapper wordMapper;
 
     @Autowired
     PhraseRepository phraseRepository;
 
-    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, PrefixService prefixService, WordMapper wordMapper) {
+    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, WordMapper wordMapper) {
         this.wordService = wordService;
         this.synonymServiceApi = synonymServiceApi;
-        this.prefixService = prefixService;
         this.wordMapper = wordMapper;
     }
 
     @GetMapping("/find")
-    public ResponseEntity<List<Word>> findWord(@RequestParam String prefix) {
+    public ResponseEntity<List<WordFrontEnd>> findWord(@RequestParam String prefix) {
 
         List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
 
-        // TODO: 20.11.2022 not necessary to use mapping from PART to String for Synonyms
-//        List<WordRequest> wordRequests = allWordsByPrefix.stream().map(wordMapper::toWordRequest).collect(Collectors.toList());
+        // TODO: 20.11.2022 necessary to use mapping from PART to String for Synonyms - because of Synonym RECURSION
+        List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordRequest).toList();
 
-        return new ResponseEntity<>(allWordsByPrefix, HttpStatus.OK);
+        return new ResponseEntity<>(wordResponse, HttpStatus.OK);
     }
 
     @PutMapping("/new")
-    public ResponseEntity<?> newWord(@RequestBody WordRequest wordRequest) {
-        Word word = wordMapper.toWord(wordRequest);
-        wordService.saveNewWordWithPartsAndDefinitions(word);
+    public ResponseEntity<?> newWord(@RequestBody WordFrontEnd wordFrontEnd) {
+        Word word = wordMapper.mapRequestToWordSkippingSynonyms(wordFrontEnd);
 
-        synonymServiceApi.coupleSynonyms(wordRequest, word);
+        wordService.saveNewWord(word);
+        synonymServiceApi.coupleSynonymsForNewWordFromRequest(wordFrontEnd, word);
 
-        prefixService.synchronisePrefixesForWordWithoutAddingWordToPrefixSet(word);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

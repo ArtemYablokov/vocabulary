@@ -21,7 +21,8 @@ public class PrefixService {
     @Autowired
     PrefixToWordRepo prefixToWordRepo;
 
-    public void synchronisePrefixesForWordWithoutAddingWordToPrefixSet(Word word) {
+    // TODO: 20.11.2022 refactor to TWO repo calls
+    public void saveOrCouplePrefixesIdToNewWordId(Word word) {
         List<Prefix> prefixesFromWord = getPrefixesFromWord(word.getName());
         prefixesFromWord.forEach(prefix -> {
             Optional<Prefix> prefixOptional = prefixRepository.findByName(prefix.getName());
@@ -36,7 +37,12 @@ public class PrefixService {
         });
     }
 
-    // TODO: 02.11.2022 extract to separate service
+    public Optional<Prefix> findByName(String prefix) {
+        return prefixRepository.findByName(prefix);
+    }
+
+
+    // TODO: 02.11.2022 extract to separate service - for testing purpose
     private List<Prefix> getPrefixesFromWord(String wordName) {
         StringBuilder stringBuilder = new StringBuilder();
         List<Prefix> prefixes = new ArrayList<>();
@@ -50,22 +56,10 @@ public class PrefixService {
         }
         return prefixes;
     }
-
     // TODO: 28.10.2022 easy to optimise: 1 select prefix 2 if not exists - create(get ID) 3 add prefixID-WordID
     // DONE in synchronisePrefixesForWordWithoutAddingWordToPrefixSet(Word word)
-    private List<String> getStringPrefixesFromWord(String wordName) {
-        StringBuilder stringBuilder = new StringBuilder();
-        List<String> prefixes = new ArrayList<>();
 
-        char[] chars = wordName.toCharArray();
-        for (char ch : chars) {
-            StringBuilder append = stringBuilder.append(ch);
-            prefixes.add(append.toString());
-        }
-        return prefixes;
-    }
-
-    public void synchronisePrefixesForWord(Word word) {
+    public void synchronisePrefixesForWordDraft(Word word) {
         List<String> prefixesFromWord = getStringPrefixesFromWord(word.getName());
         prefixesFromWord.forEach(prefix -> {
             Optional<Prefix> prefixOptional = prefixRepository.findByName(prefix);
@@ -83,12 +77,16 @@ public class PrefixService {
         });
     }
 
+    @Deprecated
+    private List<String> getStringPrefixesFromWord(String wordName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> prefixes = new ArrayList<>();
 
-    public void save(Prefix prefix) {
-        prefixRepository.save(prefix);
-    }
-
-    public List<Prefix> findAll() {
-        return prefixRepository.findAll();
+        char[] chars = wordName.toCharArray();
+        for (char ch : chars) {
+            StringBuilder append = stringBuilder.append(ch);
+            prefixes.add(append.toString());
+        }
+        return prefixes;
     }
 }

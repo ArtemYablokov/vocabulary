@@ -2,11 +2,12 @@ package com.yablokovs.vocabulary.service;
 
 
 import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
-import com.yablokovs.vocabulary.mdto.request.WordRequest;
+import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PartRepository;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -109,15 +110,23 @@ public class SynonymService {
         // newSynonyms.add(partId);
     }
 
-    Map<String, Set<String>> preparePartToSynonymMap(WordRequest wordRequest) {
+    Map<String, Set<String>> getAllSynonymsStringSortedByPartOfSpeech(WordFrontEnd wordFrontEnd) {
         Map<String, Set<String>> partOfSpeechToSynonym = new HashMap<>();
         /// TODO: 03.11.2022 word can't be saved without part of speech - need validation on ingoing request
-        wordRequest.getParts()
+        wordFrontEnd.getParts()
                 .forEach(partDto -> {
                     List<SynonymOrAntonymStringHolder> synonyms = partDto.getSynonyms();
-                    if (!ObjectUtils.isEmpty(synonyms))
-                        partOfSpeechToSynonym.put(partDto.getName(),
-                                synonyms.stream().map(SynonymOrAntonymStringHolder::getName).collect(Collectors.toSet()));
+                    if (!ObjectUtils.isEmpty(synonyms)) {
+
+                        Set<String> notBlankSynonymsStrings = synonyms.stream()
+                                .map(SynonymOrAntonymStringHolder::getName)
+                                .filter(StringUtils::isNotBlank)
+                                .collect(Collectors.toSet());
+
+                        if (!ObjectUtils.isEmpty(notBlankSynonymsStrings)) {
+                            partOfSpeechToSynonym.put(partDto.getName(), notBlankSynonymsStrings);
+                        }
+                    }
                 });
         return partOfSpeechToSynonym;
     }
@@ -183,30 +192,8 @@ public class SynonymService {
 
     public void coupleIds(Collection<IdTuple> idTuples) {
         if (idTuples.isEmpty()) return;
-        idTuples.forEach(idTuple -> {
-            synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent());
-        });
-    }
-
-
-    @Deprecated
-    void coupleExistedSynonymsWithNew(Map<String, Set<Long>> idsTobeCoupledWithNewSynonyms, Map<String, List<Long>> partOfSpeechToNewSynonymAsPartId) {
-        partOfSpeechToNewSynonymAsPartId.forEach((part, listIds) -> {
-
-            Set<Long> longs = idsTobeCoupledWithNewSynonyms.get(part);
-            if (longs != null) {
-                crossCoupleExistedSynonyms(listIds, longs);
-            }
-        });
-    }
-
-    @Deprecated
-    private void crossCoupleExistedSynonyms(Collection<Long> synonymsIds, Collection<Long> synonymsIds1) {
-        synonymsIds.forEach(id -> {
-            synonymsIds1.forEach(childId -> {
-                synonymsRepo.createReference(id, childId);
-            });
-        });
+        // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
+        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent()));
     }
 
     public Map<String, List<Long>> getExistedSynonymsIds(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
@@ -250,7 +237,8 @@ public class SynonymService {
     }
 
     // TODO: 16.11.2022 rewrite method to return Words to save BEFORE it check that: 1 adding to existing Word works (by ID) YES. 2 adding to collection execute One SQL NO 3 ids added to Parts when saving Word YES
-    public List<Word> getWordsToBeAddedWithNewParts(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
+
+    public List<Word> getWordsToBeUpdatedWithNewParts(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
         List<Word> wordsToBeUpdatedWithNewPart = new ArrayList<>();
 
         partOfSpeechToSynonym.forEach((partOfSpeech, synonyms) -> {
@@ -269,8 +257,8 @@ public class SynonymService {
 
         return wordsToBeUpdatedWithNewPart;
     }
-
     // TODO: 17.11.2022  synonyms.removeAll(existedWords.stream().map(Word::getName).collect(Collectors.toSet())); // O(n)
+
     public List<Word> getWordsToBeCreated(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
 
         Map<String, Word> wordsToBeSaved = new HashMap<>();
@@ -294,8 +282,8 @@ public class SynonymService {
 
         return wordsToBeSaved.values().stream().toList();
     }
-
     // TODO: 16.11.2022 save all words and return THEM. IDS of new parts will be retrieved later
+
     public List<Word> mergeNewWordsToBeSaved(List<Word> wordsToBeAddedWithNewParts, List<Word> wordsToBeCreated) {
         List<Word> allWordsToSave = new ArrayList<>();
 
@@ -304,7 +292,6 @@ public class SynonymService {
 
         return allWordsToSave;
     }
-
     public Map<String, List<Long>> getNewPartIdsFromSavedWords(List<Word> savedWords, Map<String, Set<String>> partOfSpeechToSynonym) {
 
         Map<String, List<Long>> newSynonymsPartIds = new HashMap<>();
@@ -325,5 +312,24 @@ public class SynonymService {
 
     public void addNewWordPartsToNewSynonymsPartIds(Word word, Map<String, List<Long>> newSynonymsPartIds) {
         word.getParts().forEach(part -> newSynonymsPartIds.get(part.getName()).add(part.getId()));
+    }
+
+    void coupleExistedSynonymsWithNew(Map<String, Set<Long>> idsTobeCoupledWithNewSynonyms, Map<String, List<Long>> partOfSpeechToNewSynonymAsPartId) {
+        partOfSpeechToNewSynonymAsPartId.forEach((part, listIds) -> {
+
+            Set<Long> longs = idsTobeCoupledWithNewSynonyms.get(part);
+            if (longs != null) {
+                crossCoupleExistedSynonyms(listIds, longs);
+            }
+        });
+    }
+
+    @Deprecated
+    private void crossCoupleExistedSynonyms(Collection<Long> synonymsIds, Collection<Long> synonymsIds1) {
+        synonymsIds.forEach(id -> {
+            synonymsIds1.forEach(childId -> {
+                synonymsRepo.createReference(id, childId);
+            });
+        });
     }
 }

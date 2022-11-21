@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @Setter
 public class WhenSearched {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "id", nullable = false)
     private Long id;
 
