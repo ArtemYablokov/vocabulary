@@ -1,9 +1,8 @@
 package com.yablokovs.vocabulary.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yablokovs.vocabulary.mdto.externalApi.localMapper.DefinitionToExampleTuple;
 import com.yablokovs.vocabulary.mdto.externalApi.Root;
-import com.yablokovs.vocabulary.mdto.externalApi.localMapper.Meaning;
+import com.yablokovs.vocabulary.mdto.request.*;
 import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +12,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExternalApiTest {
 
@@ -22,7 +22,6 @@ public class ExternalApiTest {
     @SneakyThrows
     public void testApi() {
 
-        String epam = "https://epam.com";
         String eng = "https://api.dictionaryapi.dev/api/v2/entries/en/sell";
         var request = HttpRequest.newBuilder(URI.create(eng))
                 .version(HttpClient.Version.HTTP_1_1)
@@ -34,20 +33,30 @@ public class ExternalApiTest {
 
         Root[] response = new ObjectMapper().readValue(result, Root[].class);
 
-        Map<String, Meaning> partOfSpeechToDefinition = new HashMap<>();
-
 //        Assert.assertEquals(response.length, 0); - not always come only one word !!!
 
+        List<PartDto> partDtos = new ArrayList<>();
         response[0].getMeanings().forEach(meaning -> {
-            List<DefinitionToExampleTuple> definitionToExampleTuples = new ArrayList<>();
+            PartDto partDto = new PartDto(meaning.getPartOfSpeech());
 
-            meaning.getDefinitions().forEach(
-                    definition -> definitionToExampleTuples.add(
-                            new DefinitionToExampleTuple(definition.getDefinition(), definition.getExample())));
+            partDto.setSynonyms(meaning.getSynonyms().stream().map(SynonymOrAntonymStringHolder::new).toList());
+            partDto.setAntonyms(meaning.getAntonyms().stream().map(SynonymOrAntonymStringHolder::new).toList());
 
-            partOfSpeechToDefinition.put(meaning.getPartOfSpeech(),
-                    new Meaning(meaning.getSynonyms(), meaning.getAntonyms(), definitionToExampleTuples));
+            List<DefinitionDto> definitions = new ArrayList<>();
+            meaning.getDefinitions().forEach(definition -> {
+                DefinitionDto definitionDto = new DefinitionDto(definition.getDefinition());
+                definitionDto.setPhrases(List.of(new PhraseDto(definition.getExample())));
+                definitions.add(definitionDto);
+            });
+            partDto.setDefinitions(definitions);
+
+            partDtos.add(partDto);
+
         });
+
+        WordFrontEnd wordFrontEnd = new WordFrontEnd();
+        wordFrontEnd.setName(response[0].getWord());
+        wordFrontEnd.setParts(partDtos);
 
         System.out.println("\nGOOGLE SASAI \n" + result);
 
