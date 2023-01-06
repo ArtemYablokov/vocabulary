@@ -24,7 +24,7 @@
 
         <!--TIME-->
         <timestamp>${maven.build.timestamp}</timestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+        <maven.build.timestamp.format>yyyy_MM_dd__HH:mm:ss</maven.build.timestamp.format>
     </properties>
     <dependencies>
 
@@ -177,7 +177,7 @@
                     except outputChangeLogFile for timestamp
                     -->
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <outputChangeLogFile>src/main/resources/liquibase/generated/${timestamp}_data-changelog.xml</outputChangeLogFile>
+                    <outputChangeLogFile>src/main/resources/liquibase/generated/${timestamp}_schema_changelog.xml</outputChangeLogFile>
                 </configuration>
                 <!--not sure that its mandatory-->
                 <!--                <dependencies>-->

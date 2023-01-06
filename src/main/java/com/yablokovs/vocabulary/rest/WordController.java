@@ -40,9 +40,10 @@ public class WordController {
         // TODO: 20.11.2022 necessary to use mapping from PART to String for Synonyms - because of Synonym RECURSION
         List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordRequest).toList();
 
-        WordFrontEnd word = externalService.findWord(prefix);
+        // search external
+//        WordFrontEnd word = externalService.findWord(prefix);
 
-        return new ResponseEntity<>(List.of(word), HttpStatus.OK);
+        return new ResponseEntity<>(wordResponse, HttpStatus.OK);
     }
 
     @PutMapping("/new")
