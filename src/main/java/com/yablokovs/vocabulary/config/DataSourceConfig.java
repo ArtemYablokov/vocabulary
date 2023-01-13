@@ -1,7 +1,5 @@
 package com.yablokovs.vocabulary.config;
 
-import java.util.Properties;
-import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,6 +12,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableConfigurationProperties({DataSourceProperties.class, HibernateProperties.class})
@@ -66,7 +67,7 @@ public class DataSourceConfig {
 
     private void setHibernatePropertiesBecauseSpringDoesntSupportConfigurationProperty() {
         hibernateProperties.setShowSql("true");
-        hibernateProperties.setHbm2ddlAuto("update");
+        hibernateProperties.setHbm2ddlAuto("none");
     }
 
     // TODO: 16.10.2022 remove to TEST config class - looks like necessary only for test context

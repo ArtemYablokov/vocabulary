@@ -23,13 +23,12 @@ by default = none
 src/main/java/com/yablokovs/vocabulary/config/DataSourceConfig.java
 
 ### Liquibase
-Both comands not overwrite files!
+Both commands not overwrite files!
 - generate changeLog SCHEMA command:
   mvn liquibase:generateChangeLog
 
 - generate changeLog DATA command:
-mvn liquibase:generateChangeLog -Dliquibase.diffTypes=data
-
+  mvn liquibase:generateChangeLog -Dliquibase.diffTypes=data -Dliquibase.diffIncludeObjects="WORD"
 
 - generate diff between Entity and DB state (can use JPA-buddy)
 ??? setup liqui-hibernate plugin

@@ -177,7 +177,7 @@
                     except outputChangeLogFile for timestamp
                     -->
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <outputChangeLogFile>src/main/resources/liquibase/generated/${timestamp}_schema_changelog.xml</outputChangeLogFile>
+                    <outputChangeLogFile>src/main/resources/liquibase/generate/${timestamp}_schema_changelog.xml</outputChangeLogFile>
                 </configuration>
                 <!--not sure that its mandatory-->
                 <!--                <dependencies>-->

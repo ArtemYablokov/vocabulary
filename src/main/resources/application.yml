@@ -21,6 +21,9 @@ application:
       password: vocabulary
       driverClassName: org.postgresql.Driver
   hibernate:
-    hbm2ddlAuto: update
+    hbm2ddlAuto: none
     showSql: true
     formatSql: true
+
+liquibase:
+  enable: true

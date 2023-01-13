@@ -1,0 +1,256 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+<!--    <changeSet author="apple (generated)" id="1669248946788-1">-->
+<!--        <createSequence sequenceName="SEQUENCE_GENERATOR"/>-->
+<!--    </changeSet>-->
+    <changeSet author="apple (generated)" id="1669248946788-2">
+        <createTable tableName="DEFINITION">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_E"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="PART_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-3">
+        <createTable tableName="DEFINITION_PHRASE">
+            <column name="DEFINITIONS_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PHRASES_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-4">
+        <createTable tableName="PART">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_2"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="WORD_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-5">
+        <createTable tableName="PART_ANTONYM">
+            <column name="ANTONYM_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PART_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-6">
+        <createTable tableName="PART_SYNONYM">
+            <column name="SYNONYM_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PART_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-7">
+        <createTable tableName="PHRASE">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_8"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-8">
+        <createTable tableName="PREFIX">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_8D"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-9">
+        <createTable tableName="PREFIXES_WORDS">
+            <column name="PREFIX_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+            <column name="WORD_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-10">
+        <createTable tableName="RUS_ENG_SYNONYM">
+            <column name="SYNONYMSENG_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SYNONYMSRUS_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-11">
+        <createTable tableName="TAG">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_1"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-12">
+        <createTable tableName="TAG_WORD">
+            <column name="TAGS_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORDS_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-13">
+        <createTable tableName="WHENSEARCHED">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_E5"/>
+            </column>
+            <column name="CREATEDAT" type="TIMESTAMP"/>
+            <column name="WORD_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-14">
+        <createTable tableName="WORD">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_28"/>
+            </column>
+            <column name="CREATEDAT" type="TIMESTAMP"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="NUMBEROFSEARCHES" type="BIGINT"/>
+            <column name="UPDATEDAT" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-15">
+        <createTable tableName="WORDRUS">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="CONSTRAINT_85"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-16">
+        <createIndex indexName="FK355FJL77R27PLCOAQ1VNH88OQ_INDEX_6" tableName="PART_SYNONYM">
+            <column name="PART_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-17">
+        <createIndex indexName="FK36RWM0J30G6XMEMPW2NO6GQR3_INDEX_E" tableName="DEFINITION">
+            <column name="PART_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-18">
+        <createIndex indexName="FK6VIBKI281IC6676KB4O2ACGA7_INDEX_A" tableName="PART_ANTONYM">
+            <column name="PART_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-19">
+        <createIndex indexName="FKCL0NJVAPFQIJ7POS0DRN3Q4E7_INDEX_3" tableName="PREFIXES_WORDS">
+            <column name="WORD_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-20">
+        <createIndex indexName="FKG71XBQM110T2BLM1YA64PPQA8_INDEX_2" tableName="DEFINITION_PHRASE">
+            <column name="PHRASES_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-21">
+        <createIndex indexName="FKHNGYJ013G8XDO4HCUJQ2A2CTQ_INDEX_2" tableName="TAG_WORD">
+            <column name="TAGS_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-22">
+        <createIndex indexName="FKIHBTB3KSV6LPU6GC1CXYE5E9O_INDEX_6" tableName="PART_SYNONYM">
+            <column name="SYNONYM_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-23">
+        <createIndex indexName="FKIQU44CWO1YECAF57IKQOQR8X7_INDEX_2" tableName="DEFINITION_PHRASE">
+            <column name="DEFINITIONS_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-24">
+        <createIndex indexName="FKIUYSI8TCX0PM6AQ6K7M1TLWM8_INDEX_F" tableName="RUS_ENG_SYNONYM">
+            <column name="SYNONYMSRUS_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-25">
+        <createIndex indexName="FKLKWWIE0KDX87B4IQL588WCRFO_INDEX_3" tableName="PREFIXES_WORDS">
+            <column name="PREFIX_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-26">
+        <createIndex indexName="FKLOOS8RFOXMRCVUVO5TYH8QKEW_INDEX_F" tableName="RUS_ENG_SYNONYM">
+            <column name="SYNONYMSENG_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-27">
+        <createIndex indexName="FKOG91OV7Y622EDE3V0JKK4DYWJ_INDEX_A" tableName="PART_ANTONYM">
+            <column name="ANTONYM_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-28">
+        <createIndex indexName="FKRBN9RH3RD9STO9TIFTF64184Y_INDEX_2" tableName="PART">
+            <column name="WORD_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-29">
+        <createIndex indexName="FKSLU3JUVSXCFJI419Q02WI0UER_INDEX_E" tableName="WHENSEARCHED">
+            <column name="WORD_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-30">
+        <createIndex indexName="FKT8P5UB88FDQ3XC3SE2432XVHP_INDEX_2" tableName="TAG_WORD">
+            <column name="WORDS_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-31">
+        <addForeignKeyConstraint baseColumnNames="PART_ID" baseTableName="PART_SYNONYM" constraintName="FK355FJL77R27PLCOAQ1VNH88OQ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-32">
+        <addForeignKeyConstraint baseColumnNames="PART_ID" baseTableName="DEFINITION" constraintName="FK36RWM0J30G6XMEMPW2NO6GQR3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-33">
+        <addForeignKeyConstraint baseColumnNames="PART_ID" baseTableName="PART_ANTONYM" constraintName="FK6VIBKI281IC6676KB4O2ACGA7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-34">
+        <addForeignKeyConstraint baseColumnNames="WORD_ID" baseTableName="PREFIXES_WORDS" constraintName="FKCL0NJVAPFQIJ7POS0DRN3Q4E7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="WORD" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-35">
+        <addForeignKeyConstraint baseColumnNames="PHRASES_ID" baseTableName="DEFINITION_PHRASE" constraintName="FKG71XBQM110T2BLM1YA64PPQA8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PHRASE" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-36">
+        <addForeignKeyConstraint baseColumnNames="TAGS_ID" baseTableName="TAG_WORD" constraintName="FKHNGYJ013G8XDO4HCUJQ2A2CTQ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="TAG" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-37">
+        <addForeignKeyConstraint baseColumnNames="SYNONYM_ID" baseTableName="PART_SYNONYM" constraintName="FKIHBTB3KSV6LPU6GC1CXYE5E9O" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-38">
+        <addForeignKeyConstraint baseColumnNames="DEFINITIONS_ID" baseTableName="DEFINITION_PHRASE" constraintName="FKIQU44CWO1YECAF57IKQOQR8X7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DEFINITION" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-39">
+        <addForeignKeyConstraint baseColumnNames="SYNONYMSRUS_ID" baseTableName="RUS_ENG_SYNONYM" constraintName="FKIUYSI8TCX0PM6AQ6K7M1TLWM8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="WORDRUS" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-40">
+        <addForeignKeyConstraint baseColumnNames="PREFIX_ID" baseTableName="PREFIXES_WORDS" constraintName="FKLKWWIE0KDX87B4IQL588WCRFO" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PREFIX" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-41">
+        <addForeignKeyConstraint baseColumnNames="SYNONYMSENG_ID" baseTableName="RUS_ENG_SYNONYM" constraintName="FKLOOS8RFOXMRCVUVO5TYH8QKEW" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-42">
+        <addForeignKeyConstraint baseColumnNames="ANTONYM_ID" baseTableName="PART_ANTONYM" constraintName="FKOG91OV7Y622EDE3V0JKK4DYWJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="PART" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-43">
+        <addForeignKeyConstraint baseColumnNames="WORD_ID" baseTableName="PART" constraintName="FKRBN9RH3RD9STO9TIFTF64184Y" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="WORD" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-44">
+        <addForeignKeyConstraint baseColumnNames="WORD_ID" baseTableName="WHENSEARCHED" constraintName="FKSLU3JUVSXCFJI419Q02WI0UER" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="WORD" validate="true"/>
+    </changeSet>
+    <changeSet author="apple (generated)" id="1669248946788-45">
+        <addForeignKeyConstraint baseColumnNames="WORDS_ID" baseTableName="TAG_WORD" constraintName="FKT8P5UB88FDQ3XC3SE2432XVHP" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="WORD" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

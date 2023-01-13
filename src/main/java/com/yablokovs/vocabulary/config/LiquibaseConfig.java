@@ -1,10 +1,10 @@
 package com.yablokovs.vocabulary.config;
 
-import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class LiquibaseConfig {
@@ -15,7 +15,7 @@ public class LiquibaseConfig {
         liquibase.setChangeLog("classpath:liquibase/master.xml");
         liquibase.setDataSource(dataSource);
 
-        liquibase.setShouldRun(false);
+        liquibase.setShouldRun(true);
 
         return liquibase;
     }
