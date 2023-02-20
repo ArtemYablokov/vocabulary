@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class H2ServerConfiguration {
 
-//jdbc:h2:tcp://localhost:9092/mem:testdb
-
     @SneakyThrows
     @Bean
     public Server createH2Server() {

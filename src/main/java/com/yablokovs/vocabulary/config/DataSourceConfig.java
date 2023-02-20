@@ -33,8 +33,9 @@ public class DataSourceConfig {
     @Bean
     DataSource getPrimaryDataSource() {
         // TODO: 16.10.2022 remove to TEST config class
-        setHardcodedPropertiesBecauseSpringDoesntSupportConfigurationProperty();
+//        setHardcodedPropertiesBecauseSpringDoesntSupportConfigurationProperty();
 
+        int n = 0;
         return DataSourceBuilder
                 .create()
                 .username(dataSourceProperties.getUsername())
@@ -55,7 +56,7 @@ public class DataSourceConfig {
     @Bean
     LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         // TODO: 16.10.2022 remove to TEST config class
-        setHibernatePropertiesBecauseSpringDoesntSupportConfigurationProperty();
+//        setHibernatePropertiesBecauseSpringDoesntSupportConfigurationProperty();
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(getPrimaryDataSource());
@@ -68,6 +69,7 @@ public class DataSourceConfig {
     private void setHibernatePropertiesBecauseSpringDoesntSupportConfigurationProperty() {
         hibernateProperties.setShowSql("true");
         hibernateProperties.setHbm2ddlAuto("none");
+        hibernateProperties.setFormatSql("true");
     }
 
     // TODO: 16.10.2022 remove to TEST config class - looks like necessary only for test context

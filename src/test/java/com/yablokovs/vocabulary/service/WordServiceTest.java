@@ -112,6 +112,8 @@ public class WordServiceTest {
         Part part1 = all.get(0);
         Assert.assertEquals("Part", part1.getName());
 
+        // org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role:
+        // com.yablokovs.vocabulary.model.Part.definitions, could not initialize proxy - no Session
         Definition definition1 = part1.getDefinitions().get(0);
         Assert.assertEquals("Definition", definition1.getName());
 

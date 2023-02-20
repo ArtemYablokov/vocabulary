@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "application.local.datasource", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "application.postgres.datasource", ignoreUnknownFields = false)
 public class DataSourceProperties {
     private String username;
     private String password;
