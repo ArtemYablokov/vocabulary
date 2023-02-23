@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring", uses = {PartMapper.class})
 public abstract class WordMapper {
 
-    public abstract Word mapRequestToWordSkippingSynonyms(WordFrontEnd wordFrontEnd);
+    public abstract Word mapRequestToWordIgnoreSynonymsAndAntonyms(WordFrontEnd wordFrontEnd);
 
 
     public abstract WordFrontEnd toWordRequest(Word word);

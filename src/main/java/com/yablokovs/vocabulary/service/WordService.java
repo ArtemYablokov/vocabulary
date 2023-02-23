@@ -78,18 +78,18 @@ public class WordService implements WordServiceInterface {
         return wordRepository.findByName(syn);
     }
 
-    public Set<Word> findAllWordsWithPartsBySynonymsStrings(Set<String> synonyms) {
+    public Set<Word> findAllWordsWithPartsBySynOrAntStrings(Set<String> synonyms) {
         return wordRepository.findAllByNameIn(synonyms);
     }
 
-    public List<Word> saveAllNewWords(List<Word> mergedNewWordsToBeSaved) {
-        mergedNewWordsToBeSaved.forEach(this::setParentsForPartAndDefinition);
+    public List<Word> saveAllNewWords(List<Word> newWordsToBeSaved) {
+        newWordsToBeSaved.forEach(this::setParentsForPartAndDefinition);
 
-        wordRepository.saveAll(mergedNewWordsToBeSaved);
+        wordRepository.saveAll(newWordsToBeSaved);
 
-        mergedNewWordsToBeSaved.forEach(prefixService::saveOrCouplePrefixesIdToNewWordId);
+        newWordsToBeSaved.forEach(prefixService::saveOrCouplePrefixesIdToNewWordId);
 
-        return mergedNewWordsToBeSaved;
+        return newWordsToBeSaved;
     }
 
     public List<Word> updateAllWords(List<Word> wordsToBeUpdatedWithNewParts) {

@@ -1,8 +1,10 @@
 package com.yablokovs.vocabulary.rest;
 
+import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
+import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import com.yablokovs.vocabulary.service.ExternalService;
 import com.yablokovs.vocabulary.service.SynonymServiceApi;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
@@ -48,10 +50,11 @@ public class WordController {
 
     @PutMapping("/new")
     public ResponseEntity<?> newWord(@RequestBody WordFrontEnd wordFrontEnd) {
-        Word word = wordMapper.mapRequestToWordSkippingSynonyms(wordFrontEnd);
+        Word word = wordMapper.mapRequestToWordIgnoreSynonymsAndAntonyms(wordFrontEnd);
 
         wordService.saveNewWord(word);
-        synonymServiceApi.coupleSynonymsForNewWordFromRequest(wordFrontEnd, word);
+        synonymServiceApi.coupleSynOrAntsForNewWordFromRequest(wordFrontEnd, word, PartDto::getSynonyms, SynonymsRepo.DatabaseName.SYNONYM);
+        synonymServiceApi.coupleSynOrAntsForNewWordFromRequest(wordFrontEnd, word, PartDto::getAntonyms, SynonymsRepo.DatabaseName.ANTONYM);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
