@@ -35,8 +35,8 @@ public class ExternalService {
         response[0].getMeanings().forEach(meaning -> {
             PartDto partDto = new PartDto(meaning.getPartOfSpeech());
 
-            partDto.setSynonyms(meaning.getSynonyms().stream().map(SynonymOrAntonymStringHolder::new).toList());
-            partDto.setAntonyms(meaning.getAntonyms().stream().map(SynonymOrAntonymStringHolder::new).toList());
+            partDto.setSynonyms(meaning.getSynonyms().stream().map(StringHolder::new).toList());
+            partDto.setAntonyms(meaning.getAntonyms().stream().map(StringHolder::new).toList());
 
             List<DefinitionDto> definitions = new ArrayList<>();
             meaning.getDefinitions().forEach(definition -> {

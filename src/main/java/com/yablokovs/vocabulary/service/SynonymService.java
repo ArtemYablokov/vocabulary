@@ -2,15 +2,16 @@ package com.yablokovs.vocabulary.service;
 
 
 import com.yablokovs.vocabulary.mdto.request.PartDto;
-import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
+import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.PartRepository;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -114,16 +115,29 @@ public class SynonymService {
 //        // newSynonyms.add(partId);
 //    }
 
-    Map<String, Set<String>> getAllSynOrAntStringSortedByPartOfSpeech(WordFrontEnd wordFrontEnd, Function<PartDto, List<SynonymOrAntonymStringHolder>> synonymsOrAntonymsRetriever) {
+    Map<String, Set<String>> getAllSynOrAntStringSortedByPartOfSpeech(WordFrontEnd wordFrontEnd, Function<PartDto, List<StringHolder>> synonymsOrAntonymsRetriever) {
         Map<String, Set<String>> partOfSpeechToSynonym = new HashMap<>();
-        /// TODO: 03.11.2022 word can't be saved without part of speech - need validation on ingoing request
+
+//        Map<String, Set<String>> collect = wordFrontEnd.getParts()
+//                .stream()
+//                .collect(Collectors.toMap((PartDto::getName), partDto -> synonymsOrAntonymsRetriever.apply(partDto).stream().map(StringHolder::getName).collect(Collectors.toSet())));
+//
+//        collect.forEach((key, value) -> {
+//            if (CollectionUtils.isEmpty(value)) {
+//                collect.remove(key);
+//            }
+//        });
+//
+//        return collect;
+
+        /// TODO: 03.11.2022 word can't be saved without part of speech - need validation on ingoing request - PART NAME
         wordFrontEnd.getParts()
                 .forEach(partDto -> {
-                    List<SynonymOrAntonymStringHolder> synonyms = synonymsOrAntonymsRetriever.apply(partDto);
-                    if (!ObjectUtils.isEmpty(synonyms)) {
+                    List<StringHolder> synOrAnts = synonymsOrAntonymsRetriever.apply(partDto);
+                    if (!ObjectUtils.isEmpty(synOrAnts)) {
 
-                        Set<String> notBlankSynonymsStrings = synonyms.stream()
-                                .map(SynonymOrAntonymStringHolder::getName)
+                        Set<String> notBlankSynonymsStrings = synOrAnts.stream()
+                                .map(StringHolder::getName)
                                 .filter(StringUtils::isNotBlank)
                                 .collect(Collectors.toSet());
 
@@ -200,13 +214,13 @@ public class SynonymService {
         idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), databaseName));
     }
 
-    public Map<String, List<Long>> getExistedSynonymsIds(Map<String, Set<String>> partOfSpeechToSynOrAnt, Set<Word> wordsFromRepo) {
+    public Map<String, List<Long>> getExistedSynonymsIds(Map<String, Set<String>> partToSYNmap, Set<Word> wordsFromRepo) {
         Map<String, List<Long>> posToExistedSynOrAntIds = new HashMap<>();
 
-        partOfSpeechToSynOrAnt.forEach((partOfSpeech, synOrArt) -> {
+        partToSYNmap.forEach((partOfSpeech, synOrArts) -> {
             List<Long> existedSynOrAntIds = new ArrayList<>();
 
-            synOrArt.forEach(synOrAnt -> {
+            synOrArts.forEach(synOrAnt -> {
                 Optional<Word> wordOptional = wordsFromRepo.stream()
                         .filter(w -> w.getName().equals(synOrAnt))
                         .findAny();

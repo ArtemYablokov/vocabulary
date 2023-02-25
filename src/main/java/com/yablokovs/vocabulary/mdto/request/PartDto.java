@@ -10,14 +10,15 @@ import java.util.List;
 public class PartDto {
     private String name;
     private List<DefinitionDto> definitions;
-    private List<SynonymOrAntonymStringHolder> synonyms;
-    private List<SynonymOrAntonymStringHolder> antonyms;
+    private List<StringHolder> synonyms;
+    private List<StringHolder> antonyms;
+//    private List<SynonymOrAntonymStringHolder> rusantonyms;
 
     public PartDto(String name) {
         this.name = name;
     }
 
-    public PartDto(String name, List<SynonymOrAntonymStringHolder> synonyms) {
+    public PartDto(String name, List<StringHolder> synonyms) {
         this.name = name;
         this.synonyms = synonyms;
     }

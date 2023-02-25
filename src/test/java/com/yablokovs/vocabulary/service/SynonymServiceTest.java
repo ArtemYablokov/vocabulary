@@ -1,13 +1,12 @@
 package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.mdto.request.PartDto;
-import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
+import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,10 +62,8 @@ class SynonymServiceTest {
     @Test
     void preparePartToSynonymMap() {
         WordFrontEnd wordFrontEnd = new WordFrontEnd();
-        PartDto partDto1 = new PartDto("verb", List.of(new SynonymOrAntonymStringHolder("verb1"),
-                new SynonymOrAntonymStringHolder("verb2"), new SynonymOrAntonymStringHolder("verb3")));
-        PartDto partDto2 = new PartDto("noun", List.of(new SynonymOrAntonymStringHolder("noun1"),
-                new SynonymOrAntonymStringHolder("noun2")));
+        PartDto partDto1 = new PartDto("verb", List.of(new StringHolder("verb1"), new StringHolder("verb2"), new StringHolder("verb3")));
+        PartDto partDto2 = new PartDto("noun", List.of(new StringHolder("noun1"), new StringHolder("noun2")));
 
         wordFrontEnd.setParts(List.of(partDto1, partDto2));
         Map<String, Set<String>> actual = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, PartDto::getSynonyms);
@@ -87,8 +84,29 @@ class SynonymServiceTest {
 
         Map<String, List<String>> expected = new HashMap<>();
 
+        // TODO: 24/02/23 because of both maps are empty - there was not TYPE assigned yet
+        
         Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    void prepareMapEmpty() {
+        WordFrontEnd wordFrontEnd = new WordFrontEnd();
+
+        PartDto partDto1 = new PartDto("verb", new ArrayList<>());
+
+
+        wordFrontEnd.setParts(List.of(partDto1));
+        Map<String, Set<String>> actual = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, PartDto::getSynonyms);
+
+        Map<String, List<String>> expected = new HashMap<>();
+
+        // TODO: 24/02/23 because of both maps are empty - there was not TYPE assigned yet
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+
 
     // TODO: 03.11.2022 move to NON-Spring tests because no context required
     @Test
