@@ -3,6 +3,7 @@ package com.yablokovs.vocabulary.service;
 import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
+import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -85,7 +86,7 @@ class SynonymServiceTest {
         Map<String, List<String>> expected = new HashMap<>();
 
         // TODO: 24/02/23 because of both maps are empty - there was not TYPE assigned yet
-        
+
         Assertions.assertEquals(expected, actual);
     }
 
@@ -107,7 +108,6 @@ class SynonymServiceTest {
     }
 
 
-
     // TODO: 03.11.2022 move to NON-Spring tests because no context required
     @Test
     void getExistedSynonymsPairsToBeCoupled() {
@@ -119,7 +119,7 @@ class SynonymServiceTest {
         sets.add(Set.of(4L, 41L));
         uniqueSetsOfExistingSets.put("verb", sets);
 
-        Set<IdTuple> actual = synonymService.getPairsOfExistedSynonymsToBeCoupled(uniqueSetsOfExistingSets);
+        Set<IdTuple> actual = synonymService.crossSetsToCoupleEachMemberOfSet(uniqueSetsOfExistingSets);
 
         Set<IdTuple> expected = new HashSet<>(
                 Set.of(new IdTuple(1L, 3L),
@@ -156,7 +156,7 @@ class SynonymServiceTest {
         Map<String, Set<Long>> actual = synonymService.getExistedSynonymsToBeCoupledWithNew(partToExistedSynonymsUniqueSets);
 
         Map<String, Set<Long>> expected = new HashMap<>();
-        expected.put("verb", Set.of(1L, 2L, 3L,5L, 6L, 7L, 11L, 12L, 13L));
+        expected.put("verb", Set.of(1L, 2L, 3L, 5L, 6L, 7L, 11L, 12L, 13L));
         expected.put("noun", Set.of(21L, 22L, 23L, 31L, 32L, 33L));
 
         Assertions.assertEquals(expected, actual);
