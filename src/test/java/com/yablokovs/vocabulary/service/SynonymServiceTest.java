@@ -3,7 +3,6 @@ package com.yablokovs.vocabulary.service;
 import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
-import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @SpringBootTest
@@ -153,7 +153,9 @@ class SynonymServiceTest {
         partToExistedSynonymsUniqueSets.put("verb", List.of(new HashSet<>(Set.of(1L, 2L, 3L)), new HashSet<>(Set.of(5L, 6L, 7L)), new HashSet<>(Set.of(11L, 12L, 13L))));
         partToExistedSynonymsUniqueSets.put("noun", List.of(new HashSet<>(Set.of(21L, 22L)), new HashSet<>(Collections.singleton(23L)), new HashSet<>(Set.of(31L, 32L, 33L))));
 
-        Map<String, Set<Long>> actual = synonymService.getExistedSynonymsToBeCoupledWithNew(partToExistedSynonymsUniqueSets);
+        Map<String, Set<Long>> actual = partToExistedSynonymsUniqueSets.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, (entry -> entry.getValue().stream().flatMap(Collection::stream).collect(Collectors.toSet()))));
 
         Map<String, Set<Long>> expected = new HashMap<>();
         expected.put("verb", Set.of(1L, 2L, 3L, 5L, 6L, 7L, 11L, 12L, 13L));

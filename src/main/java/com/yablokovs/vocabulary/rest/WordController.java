@@ -40,7 +40,7 @@ public class WordController {
         List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
 
         // TODO: 20.11.2022 necessary to use mapping from PART to String for Synonyms - because of Synonym RECURSION
-        List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordRequest).toList();
+        List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordResponse).toList();
 
         // search external
 //        WordFrontEnd word = externalService.findWord(prefix);
@@ -53,8 +53,8 @@ public class WordController {
         Word word = wordMapper.mapRequestToWordIgnoreSynonymsAndAntonyms(wordFrontEnd);
 
         wordService.saveNewWord(word);
-        synonymServiceApi.coupleSynOrAntsForNewWordFromRequest(wordFrontEnd, word, PartDto::getSynonyms, SynonymsRepo.DatabaseName.SYNONYM);
-        synonymServiceApi.coupleSynOrAntsForNewWordFromRequest(wordFrontEnd, word, PartDto::getAntonyms, SynonymsRepo.DatabaseName.ANTONYM);
+
+        synonymServiceApi.coupleSynAndAnt(wordFrontEnd, word);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

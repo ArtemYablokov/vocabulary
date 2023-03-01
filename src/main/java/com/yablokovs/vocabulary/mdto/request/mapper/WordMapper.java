@@ -10,5 +10,5 @@ public abstract class WordMapper {
     public abstract Word mapRequestToWordIgnoreSynonymsAndAntonyms(WordFrontEnd wordFrontEnd);
 
 
-    public abstract WordFrontEnd toWordRequest(Word word);
+    public abstract WordFrontEnd toWordResponse(Word word);
 }

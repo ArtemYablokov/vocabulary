@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.yablokovs.vocabulary.repo.SynonymsRepo.DatabaseName;
 
@@ -140,6 +139,7 @@ public class SynonymService {
 //        return collect;
 
         /// TODO: 03.11.2022 word can't be saved without part of speech - need validation on ingoing request - PART NAME
+        // TODO: 26/02/23 BLANK checking ???
         wordFrontEnd.getParts()
                 .forEach(partDto -> {
                     List<StringHolder> synOrAnts = synonymsOrAntonymsRetriever.apply(partDto);
@@ -180,14 +180,8 @@ public class SynonymService {
         return idTuples;
     }
 
-    public Map<String, Set<Long>> getExistedSynonymsToBeCoupledWithNew(Map<String, List<Set<Long>>> partToExistedSynonymsNotDublicatingSets) {
-        return partToExistedSynonymsNotDublicatingSets.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, (entry -> entry.getValue().stream().flatMap(Collection::stream).collect(Collectors.toSet()))));
-    }
-
     // TODO: 01.11.2022 после связывания всех существующих синонимов - каждый из них имеет одинаковый набор -> можно добавлять новое только к одному из
-    public Set<IdTuple> getExistedSynonymsToNewToBeCoupled(Map<String, Set<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
+    public Set<IdTuple> getExistedSynonymsToNewToBeCoupled(Map<String, List<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
         Set<IdTuple> idTuples = new HashSet<>();
 
         partToExistedSynonymsToBeCoupledWithNew.forEach((part, existedSynsIds) -> {
@@ -216,10 +210,16 @@ public class SynonymService {
         return idTuples;
     }
 
-    public void coupleSynonymsIds(Collection<IdTuple> idTuples, DatabaseName databaseName) {
+    public void coupleSynonymsIds(Collection<IdTuple> idTuples) {
         if (idTuples.isEmpty()) return;
         // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
-        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), databaseName));
+        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), DatabaseName.SYNONYM));
+    }
+
+    public void coupleAntonymsIds(Collection<IdTuple> idTuples) {
+        if (idTuples.isEmpty()) return;
+        // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
+        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), DatabaseName.ANTONYM));
     }
 
     public Map<String, List<Long>> getExistedSynonymsIds(Map<String, Set<String>> partToSYNmap, Set<Word> wordsFromRepo) {
@@ -355,7 +355,7 @@ public class SynonymService {
         return allWordsToSave;
     }
 
-    public Map<String, List<Long>> getNewPartIdsFromSavedWords(List<Word> savedNewParts, Map<String, Set<String>> basicPartToSYNmap) {
+    public Map<String, List<Long>> getNewPartIdsFromSavedWords(Map<String, Set<String>> basicPartToSYNmap, List<Word> savedNewParts) {
         Map<String, List<Long>> newSynonymsPartIds = new HashMap<>();
 
         basicPartToSYNmap.forEach((part, syn) -> {
@@ -375,20 +375,6 @@ public class SynonymService {
         return newSynonymsPartIds;
     }
 
-    public void addNewWordPartsToNewSynonymsPartIds(Word word, Map<String, List<Long>> newSynonymsPartIds) {
-        word.getParts().forEach(part -> {
-            String partName = part.getName();
-
-            List<Long> newIds = newSynonymsPartIds.get(partName);
-            if (newIds == null) {
-                ArrayList<Long> ids = new ArrayList<>();
-                ids.add(part.getId());
-                newSynonymsPartIds.put(partName, ids);
-            } else {
-                newIds.add(part.getId());
-            }
-        });
-    }
 
 //    void coupleExistedSynonymsWithNew(Map<String, Set<Long>> idsTobeCoupledWithNewSynonyms, Map<String, List<Long>> partOfSpeechToNewSynonymAsPartId) {
 //        partOfSpeechToNewSynonymAsPartId.forEach((part, listIds) -> {
