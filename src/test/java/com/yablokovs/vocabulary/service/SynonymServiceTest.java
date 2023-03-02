@@ -3,7 +3,7 @@ package com.yablokovs.vocabulary.service;
 import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
-import com.yablokovs.vocabulary.repo.SynonymsRepo;
+import com.yablokovs.vocabulary.repo.SynonymsRequestBuileder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,10 +18,13 @@ import java.util.stream.Collectors;
 @SpringBootTest
 class SynonymServiceTest {
     @MockBean
-    SynonymsRepo synonymsRepo;
+    SynonymsRequestBuileder synonymsRequestBuileder;
 
     @Autowired
     SynonymService synonymService;
+
+    @Autowired
+    SynonymUtilService synonymUtilService;
 
 //    @BeforeEach
 //    void init() {
@@ -67,7 +70,7 @@ class SynonymServiceTest {
         PartDto partDto2 = new PartDto("noun", List.of(new StringHolder("noun1"), new StringHolder("noun2")));
 
         wordFrontEnd.setParts(List.of(partDto1, partDto2));
-        Map<String, Set<String>> actual = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, PartDto::getSynonyms);
+        Map<String, Set<String>> actual = synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
 
 
         Map<String, List<String>> expected = new HashMap<>(
@@ -81,7 +84,7 @@ class SynonymServiceTest {
     void preparePartToSynonymMapEmpty() {
         WordFrontEnd wordFrontEnd = new WordFrontEnd();
         wordFrontEnd.setParts(Collections.emptyList());
-        Map<String, Set<String>> actual = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, PartDto::getSynonyms);
+        Map<String, Set<String>> actual = synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
 
         Map<String, List<String>> expected = new HashMap<>();
 
@@ -98,7 +101,7 @@ class SynonymServiceTest {
 
 
         wordFrontEnd.setParts(List.of(partDto1));
-        Map<String, Set<String>> actual = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, PartDto::getSynonyms);
+        Map<String, Set<String>> actual = synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
 
         Map<String, List<String>> expected = new HashMap<>();
 
@@ -119,7 +122,7 @@ class SynonymServiceTest {
         sets.add(Set.of(4L, 41L));
         uniqueSetsOfExistingSets.put("verb", sets);
 
-        Set<IdTuple> actual = synonymService.crossSetsToCoupleEachMemberOfSet(uniqueSetsOfExistingSets);
+        Set<IdTuple> actual = synonymUtilService.crossSetsToCoupleEachMemberOfEachSet(uniqueSetsOfExistingSets);
 
         Set<IdTuple> expected = new HashSet<>(
                 Set.of(new IdTuple(1L, 3L),

@@ -6,18 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.sql.DataSource;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class SynonymsRepoTest {
+class SynonymsRequestBuilederTest {
 
     @Autowired
     PartRepository partRepository;
 
     @Autowired
-    SynonymsRepo synonymsRepo;
+    SynonymsRequestBuileder synonymsRequestBuileder;
 
     @Autowired
     DataSource dataSource;

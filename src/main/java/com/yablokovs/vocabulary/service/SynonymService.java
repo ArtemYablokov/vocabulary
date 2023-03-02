@@ -6,8 +6,6 @@ import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
-import com.yablokovs.vocabulary.repo.PartRepository;
-import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -16,127 +14,21 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.yablokovs.vocabulary.repo.SynonymsRepo.DatabaseName;
-
 // TODO: 15.11.2022 make it private BEAN visibility
 @Service
 public class SynonymService {
 
-    // TODO: 16.11.2022 remove both from here ???
-    private final PartRepository partRepository;
+    private final SynonymUtilService synonymUtilService;
 
-    private final SynonymsRepo synonymsRepo;
+    private final SynonymDAOService synonymDAOService;
 
-
-    public SynonymService(WordService wordService, SynonymsRepo synonymsRepo, PartRepository partRepository) {
-        this.synonymsRepo = synonymsRepo;
-        this.partRepository = partRepository;
+    public SynonymService(SynonymUtilService synonymUtilService, SynonymDAOService synonymDAOService) {
+        this.synonymUtilService = synonymUtilService;
+        this.synonymDAOService = synonymDAOService;
     }
 
-    // TODO: 26/02/23 в теории все связанные синонимы от добавленных можно вытащить из результата запроса в БД
-    //  (чтобы он возвращал не только первый уровень от WORD - который равен как раз PART, но еще и SYNs от этих PART)
-
-    // input в одной части речи a(bc), b(ca), x(yz)
-    // output <abc>, <xyz>
-    public Map<String, List<Set<Long>>> filterExistedSynonymsToUniqueSets(Set<String> basicParts,
-                                                                          Map<String, List<Long>> partToExistedSYNids,
-                                                                          DatabaseName databaseName) {
-        Map<String, List<Set<Long>>> posToSetsOfUncoupledUniqueSynonyms = new HashMap<>();
-
-        basicParts.forEach(part -> {
-            // смысл SET в том что их между собой нужно будет связать, при этом не связывая одинаковые МНОЖЕСТВА
-            // каждый SET представляет собой добавленный SYN + все его SYNs из БД
-            List<Set<Long>> setsOfUncoupledSynonyms = new ArrayList<>();
-
-            List<Long> existedSynonymsByPart = partToExistedSYNids.get(part); // a, b, x
-
-            existedSynonymsByPart.forEach(existedSynonymId -> { // a // b // x
-
-                if (!idExistsInList(setsOfUncoupledSynonyms, existedSynonymId)) { // b is skipped
-
-                    // этот запрос вынимает все связанные ID
-                    Set<Long> synsBySyn = synonymsRepo.findSynonymsByPartId(existedSynonymId, databaseName); // bc // skip // yz
-                    synsBySyn.add(existedSynonymId); // adding itself -> abc // skip // -> xyz
-                    setsOfUncoupledSynonyms.add(synsBySyn); // <abc> // skip // <xyz>
-                }
-            });
-            posToSetsOfUncoupledUniqueSynonyms.put(part, setsOfUncoupledSynonyms);
-        });
-        return posToSetsOfUncoupledUniqueSynonyms;
-    }
-
-    private boolean idExistsInList(List<Set<Long>> list, Long id) {
-        return list.stream().anyMatch(set -> set.contains(id));
-    }
-
-    //    @Transactional
-    // TODO: 01.11.2022 need to split to 2 methods
-//    void prepareExistedAndNewPartOfSpeechIds(Map<String, Set<String>> partOfSpeechToSynonym,
-//                                             Map<String, List<Long>> partOfSpeechToNewSynonymAsPartId,
-//                                             Map<String, List<Long>> partOfSpeechToExistedSynonymAsPartId) {
-//        partOfSpeechToSynonym.forEach(
-//                (partOfSpeech, listSyn) -> {
-//                    ArrayList<Long> newSynonyms = new ArrayList<>();
-//                    ArrayList<Long> existedSynonyms = new ArrayList<>();
-//                    listSyn.forEach(syn -> {
-//                        // TODO: 31.10.2022 проверить что для второго прохода (другой части речи) если слова совпадают - не создастся новое слово!
-//                        Optional<Word> synonymByName = /*wordService.findByName(syn)*/ null;
-//                        if (synonymByName.isPresent()) {
-//                            Word existedWord = synonymByName.get();
-//                            // TODO: 31.10.2022 need to fetch Parts with name and ID
-//                            // TODO: 31.10.2022 implement preventing doubling Pos's
-//                            Optional<Part> existedPart = existedWord.getParts().stream().filter(part -> part.getName().equals(partOfSpeech)).findFirst();
-//                            if (existedPart.isPresent()) {
-//                                existedSynonyms.add(existedPart.get().getId());
-//                            } else {
-//                                Part part = new Part();
-//                                part.setName(partOfSpeech);
-//                                part.setWord(existedWord);
-//                                partRepository.save(part);
-//                                newSynonyms.add(part.getId());
-//                            }
-//                        } else {
-//                            // createWordWithPartAndSynonym(partOfSpeech, newSynonyms, syn);
-//                        }
-//                    });
-//                    partOfSpeechToNewSynonymAsPartId.put(partOfSpeech, newSynonyms);
-//                    partOfSpeechToExistedSynonymAsPartId.put(partOfSpeech, existedSynonyms);
-//                });
-//    }
-
-//    private void createWordWithPartAndSynonym(String partOfSpeech, ArrayList<Long> newSynonyms, String syn) {
-//        Word newSynonym = new Word(syn);
-//        // newSynonym.setParts(List.of(new Part(partOfSpeech)));
-//        newSynonym.addPart(new Part(partOfSpeech));
-//
-//        // don't need to coupled parents with child, because its coupled with Word::addPart
-////        wordService.saveNewWordWithPartsAndDefinitions(newSynonym);
-////        part.setWord(newSynonym);
-//
-//        // TODO: 15.11.2022 what if set 1 by default
-//        newSynonym.setNumberOfSearches(1L);
-//
-//        // Word save = wordService.save(newSynonym);
-//        // Long partId = save.getParts().iterator().next().getId();
-//
-//        // TODO: 15.11.2022 method shouldn't modify external data (newSynonyms)
-//        // newSynonyms.add(partId);
-//    }
-
-    Map<String, Set<String>> getAllSynOrAntStringSortedByPartOfSpeech(WordFrontEnd wordFrontEnd, Function<PartDto, List<StringHolder>> synonymsOrAntonymsRetriever) {
+    public Map<String, Set<String>> getBasicMapOfPartToSynOrAnt(WordFrontEnd wordFrontEnd, Function<PartDto, List<StringHolder>> synonymsOrAntonymsRetriever) {
         Map<String, Set<String>> partOfSpeechToSynonym = new HashMap<>();
-
-//        Map<String, Set<String>> collect = wordFrontEnd.getParts()
-//                .stream()
-//                .collect(Collectors.toMap((PartDto::getName), partDto -> synonymsOrAntonymsRetriever.apply(partDto).stream().map(StringHolder::getName).collect(Collectors.toSet())));
-//
-//        collect.forEach((key, value) -> {
-//            if (CollectionUtils.isEmpty(value)) {
-//                collect.remove(key);
-//            }
-//        });
-//
-//        return collect;
 
         /// TODO: 03.11.2022 word can't be saved without part of speech - need validation on ingoing request - PART NAME
         // TODO: 26/02/23 BLANK checking ???
@@ -158,68 +50,48 @@ public class SynonymService {
         return partOfSpeechToSynonym;
     }
 
-    public Set<IdTuple> crossSetsToCoupleEachMemberOfSet(Map<String, List<Set<Long>>> synonymsToBeCoupled) {
+    // TODO: 26/02/23 в теории все связанные синонимы от добавленных можно вытащить из результата запроса в БД
+    //  (чтобы он возвращал не только первый уровень от WORD - который равен как раз PART, но еще и SYNs от этих PART)
+    // input в одной части речи a(bc), b(ca), x(yz)
+    // output <abc>, <xyz>
+    public Map<String, List<Set<Long>>> filterExistedSynonymsToUniqueSets(Set<String> basicParts,
+                                                                          Map<String, List<Long>> partToExistedSYNids) {
+        Map<String, List<Set<Long>>> posToSetsOfUncoupledUniqueSynonyms = new HashMap<>();
 
-        Map<String, List<Set<Long>>> copyOfSynonymsToBeCoupled = Map.copyOf(synonymsToBeCoupled);
+        basicParts.forEach(part -> {
+            // смысл SET в том что их между собой нужно будет связать, при этом не связывая одинаковые МНОЖЕСТВА
+            // каждый SET представляет собой добавленный SYN + все его SYNs из БД
+            List<Set<Long>> setsOfUncoupledSynonyms = new ArrayList<>();
 
-        // TODO: 03.11.2022 concurrent COLLECTIONS can be used w/out iterator for removing
-        Set<IdTuple> idTuples = new HashSet<>();
-        copyOfSynonymsToBeCoupled.forEach((part, listOfSets) -> {
-            Iterator<Set<Long>> iterator = listOfSets.iterator();
+            List<Long> existedSynonymsByPart = partToExistedSYNids.get(part); // a, b, x
 
-            while (iterator.hasNext()) {
-                Set<Long> next = iterator.next();
-                iterator.remove();
+            existedSynonymsByPart.forEach(existedSynonymId -> { // a // b // x
 
-                next.forEach(headId ->
-                        listOfSets.forEach(childIdSet ->
-                                childIdSet.forEach(childId ->
-                                        idTuples.add(new IdTuple(headId, childId)))));
-            }
-        });
-        return idTuples;
-    }
+                if (!idExistsInList(setsOfUncoupledSynonyms, existedSynonymId)) { // b is skipped
 
-    // TODO: 01.11.2022 после связывания всех существующих синонимов - каждый из них имеет одинаковый набор -> можно добавлять новое только к одному из
-    public Set<IdTuple> getExistedSynonymsToNewToBeCoupled(Map<String, List<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
-        Set<IdTuple> idTuples = new HashSet<>();
-
-        partToExistedSynonymsToBeCoupledWithNew.forEach((part, existedSynsIds) -> {
-            List<Long> newSynsIds = newSynOrAntPartIds.get(part);
-
-            if (newSynsIds != null) {
-                existedSynsIds.forEach(existedId -> {
-                    newSynsIds.forEach(newId -> idTuples.add(new IdTuple(existedId, newId)));
-                });
-            }
-        });
-        return idTuples;
-    }
-
-    public List<IdTuple> getNewSynonymsToBeCoupled(Map<String, List<Long>> newSynOrAntPartIds) {
-        List<IdTuple> idTuples = new ArrayList<>();
-
-        newSynOrAntPartIds.forEach((part, list) -> {
-            for (int i = 0; i < list.size(); i++) {
-                Long parentId = list.get(i);
-                for (int j = i + 1; j < list.size(); j++) {
-                    idTuples.add(new IdTuple(parentId, list.get(j)));
+                    // этот запрос вынимает все связанные ID
+                    Set<Long> synsBySyn = synonymDAOService.findSynonymsByPartId(existedSynonymId); // bc // skip // yz
+                    synsBySyn.add(existedSynonymId); // adding itself -> abc // skip // -> xyz
+                    setsOfUncoupledSynonyms.add(synsBySyn); // <abc> // skip // <xyz>
                 }
-            }
+            });
+            posToSetsOfUncoupledUniqueSynonyms.put(part, setsOfUncoupledSynonyms);
         });
-        return idTuples;
+        return posToSetsOfUncoupledUniqueSynonyms;
+    }
+
+    private boolean idExistsInList(List<Set<Long>> list, Long id) {
+        return list.stream().anyMatch(set -> set.contains(id));
     }
 
     public void coupleSynonymsIds(Collection<IdTuple> idTuples) {
         if (idTuples.isEmpty()) return;
-        // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
-        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), DatabaseName.SYNONYM));
+        synonymDAOService.saveSynIdTuple(idTuples);
     }
 
     public void coupleAntonymsIds(Collection<IdTuple> idTuples) {
         if (idTuples.isEmpty()) return;
-        // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
-        idTuples.forEach(idTuple -> synonymsRepo.createReference(idTuple.getChild(), idTuple.getParent(), DatabaseName.ANTONYM));
+        synonymDAOService.saveAntIdTuple(idTuples);
     }
 
     public Map<String, List<Long>> getExistedSynonymsIds(Map<String, Set<String>> partToSYNmap, Set<Word> wordsFromRepo) {
@@ -239,25 +111,6 @@ public class SynonymService {
         });
 
         return partToExistedSynOrAntIds;
-    }
-
-    public Map<String, List<Long>> getWordIdsToBeAddedWithNewParts(Map<String, Set<String>> partOfSpeechToSynonym, Set<Word> allWordsWithPartsBySynonymsStrings) {
-        Map<String, List<Long>> posToNewSynonymsIds = new HashMap<>();
-
-        partOfSpeechToSynonym.forEach((partOfSpeech, synonyms) -> {
-            List<Long> wordsIdsToBeAddedNewPart = new ArrayList<>();
-
-            synonyms.forEach(synonym -> {
-                allWordsWithPartsBySynonymsStrings.stream()
-                        .filter(w1 -> w1.getName().equals(synonym)
-                                && w1.getParts().stream().noneMatch(part -> part.getName().equals(partOfSpeech)))
-                        .findAny()
-                        .ifPresent(w -> wordsIdsToBeAddedNewPart.add(w.getId()));
-            });
-            posToNewSynonymsIds.put(partOfSpeech, wordsIdsToBeAddedNewPart);
-        });
-
-        return posToNewSynonymsIds;
     }
 
     // TODO: 16.11.2022 rewrite method to return Words to save BEFORE it check that: 1 adding to existing Word works (by ID) YES. 2 adding to collection execute One SQL NO 3 ids added to Parts when saving Word YES
@@ -308,54 +161,7 @@ public class SynonymService {
         return wordsToBeSaved.values().stream().toList();
     }
 
-    // TODO: 26/02/23 sorted by PARTs - not used because when the words is saving - 2 same words in different PARTs will be saved twice
-    //  (or requires SET to merge 2 PARTS in 1 WORD)
-    public Map<String, Set<Word>> getPartToWordsToBeCreated(Map<String, Set<String>> partToSYNmap, Set<Word> existedWordsFromRepo) {
-        Map<String, Word> nameToExistedWordMap = existedWordsFromRepo
-                .stream()
-                .collect(Collectors
-                        .toMap(Word::getName, Function.identity()));
-
-        Map<String, Word> nameToWordForCheckingRepeatedBetweenParts = new HashMap<>();
-
-        Map<String, Set<Word>> partToWords = new HashMap<>();
-
-
-        partToSYNmap.forEach((partOfSpeech, synOrAnts) -> {
-            Set<Word> words = new HashSet<>();
-
-            synOrAnts.stream()
-                    .filter(syn -> !nameToExistedWordMap.containsKey(syn))
-                    .forEach(synOrAnt -> {
-                        Word word = nameToWordForCheckingRepeatedBetweenParts.get(synOrAnt);
-                        if (word != null) { // check if for different parts two equal words
-                            word.addPart(new Part(partOfSpeech));
-                            words.add(word);
-                        } else {
-                            Word newWord = new Word(synOrAnt);
-                            newWord.addPart(new Part(partOfSpeech));
-
-                            nameToWordForCheckingRepeatedBetweenParts.put(synOrAnt, newWord);
-                            words.add(newWord);
-                        }
-                    });
-            partToWords.put(partOfSpeech, words);
-        });
-
-        return partToWords;
-    }
-    // TODO: 16.11.2022 save all words and return THEM. IDS of new parts will be retrieved later
-
-    public List<Word> mergeNewWordsToBeSaved(List<Word> wordsToBeAddedWithNewParts, List<Word> wordsToBeCreated) {
-        List<Word> allWordsToSave = new ArrayList<>();
-
-        allWordsToSave.addAll(wordsToBeAddedWithNewParts);
-        allWordsToSave.addAll(wordsToBeCreated);
-
-        return allWordsToSave;
-    }
-
-    public Map<String, List<Long>> getNewPartIdsFromSavedWords(Map<String, Set<String>> basicPartToSYNmap, List<Word> savedNewParts) {
+    public Map<String, List<Long>> getPartIdsFromSavedWords(Map<String, Set<String>> basicPartToSYNmap, List<Word> savedNewParts) {
         Map<String, List<Long>> newSynonymsPartIds = new HashMap<>();
 
         basicPartToSYNmap.forEach((part, syn) -> {
@@ -375,23 +181,52 @@ public class SynonymService {
         return newSynonymsPartIds;
     }
 
+    public List<IdTuple> coupleSynonyms(Map<String, List<Set<Long>>> partToExistedSynonymsNotDublicatingSets,
+                                        Map<String, List<Long>> newSynonymsPartIdsWithWord) {
+        // 11a couple existed SETs among
+        // a-x a-y a-z, b = same, c = same
+        Set<IdTuple> existedSynonymsToBeCoupled =
+                synonymUtilService.crossSetsToCoupleEachMemberOfEachSet(partToExistedSynonymsNotDublicatingSets);
+        // 11b couple all existed with all new
+        // each abcxyz with each new SYNs
+        List<IdTuple> existedSynonymsWithNewToBeCoupled =
+                synonymUtilService.crossCouple2ListsOfId(
+                        synonymUtilService.flatMapNotDuplicatingSetsToOneSet(partToExistedSynonymsNotDublicatingSets), newSynonymsPartIdsWithWord);
+        // 11c couple all new among each other
+        // simply all NEW SYNs among each other
+        List<IdTuple> newSynonymsToBeCoupled =
+                synonymUtilService.getAllPairsToBeCoupled(newSynonymsPartIdsWithWord);
 
-//    void coupleExistedSynonymsWithNew(Map<String, Set<Long>> idsTobeCoupledWithNewSynonyms, Map<String, List<Long>> partOfSpeechToNewSynonymAsPartId) {
-//        partOfSpeechToNewSynonymAsPartId.forEach((part, listIds) -> {
-//
-//            Set<Long> longs = idsTobeCoupledWithNewSynonyms.get(part);
-//            if (longs != null) {
-//                crossCoupleExistedSynonyms(listIds, longs);
-//            }
-//        });
-//    }
-//
-//    @Deprecated
-//    private void crossCoupleExistedSynonyms(Collection<Long> synonymsIds, Collection<Long> synonymsIds1) {
-//        synonymsIds.forEach(id -> {
-//            synonymsIds1.forEach(childId -> {
-//                synonymsRepo.createReference(id, childId, DatabaseName.SYNONYM);
-//            });
-//        });
-//    }
+        List<IdTuple> idTuplesResult = new ArrayList<>();
+        idTuplesResult.addAll(existedSynonymsToBeCoupled);
+        idTuplesResult.addAll(existedSynonymsWithNewToBeCoupled);
+        idTuplesResult.addAll(newSynonymsToBeCoupled);
+
+        return idTuplesResult;
+    }
+
+
+    public List<IdTuple> coupleAntonyms(Map<String, List<Set<Long>>> existedSynonymsUniqueSets,
+                                        Map<String, List<Set<Long>>> existedAntonymsUniqueSets,
+                                        Map<String, List<Long>> newSynonymsWithWord,
+                                        Map<String, List<Long>> newAntonyms) {
+
+        // 1 новые и старые SYN пересекать с WORD уже не нужно
+        // 2 а вот для антонимов имеет смысл пересечь WORD с ними (как старыми, так и новыми)
+        // 3 тогда если положить слово в NEW SYN - оно будет связано и со старыми, и с новыми ANT (а оно уже там и лежит  )
+
+        List<IdTuple> idTuples = synonymUtilService.coupleExistedANTandSYN(existedSynonymsUniqueSets, existedAntonymsUniqueSets);
+
+        List<IdTuple> tuples = synonymUtilService.crossCouple2ListsOfId(newSynonymsWithWord, newAntonyms);
+        List<IdTuple> tuples1 = synonymUtilService.crossCouple2ListsOfId(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedSynonymsUniqueSets), newAntonyms);
+        List<IdTuple> tuples2 = synonymUtilService.crossCouple2ListsOfId(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedAntonymsUniqueSets), newSynonymsWithWord);
+
+        List<IdTuple> idTuplesResult = new ArrayList<>();
+        idTuplesResult.addAll(idTuples);
+        idTuplesResult.addAll(tuples);
+        idTuplesResult.addAll(tuples1);
+        idTuplesResult.addAll(tuples2);
+
+        return idTuplesResult;
+    }
 }

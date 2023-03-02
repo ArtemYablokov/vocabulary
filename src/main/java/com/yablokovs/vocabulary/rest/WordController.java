@@ -1,10 +1,8 @@
 package com.yablokovs.vocabulary.rest;
 
-import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
-import com.yablokovs.vocabulary.repo.SynonymsRepo;
 import com.yablokovs.vocabulary.service.ExternalService;
 import com.yablokovs.vocabulary.service.SynonymServiceApi;
 import com.yablokovs.vocabulary.service.WordServiceInterface;

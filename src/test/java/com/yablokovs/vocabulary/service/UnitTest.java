@@ -1,16 +1,18 @@
 package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.model.Word;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 public class UnitTest {
 
-    SynonymService synonymService =  new SynonymService(null, null, null);
+
+    SynonymService synonymService = new SynonymService(null, null);
 
     @Test
-    void getPartToWordsToBeCreated() {
+    void getWordsToBeCreated() {
 
         Map<String, Set<String>> partToSYNmap = new HashMap<>();
         Set<Word> existedWordsFromRepo = new HashSet<>();
@@ -21,9 +23,15 @@ public class UnitTest {
         partToSYNmap.put("verb", verbs);
         partToSYNmap.put("nouns", nouns);
 
-        Map<String, Set<Word>> partToWordsToBeCreated = synonymService.getPartToWordsToBeCreated(partToSYNmap, existedWordsFromRepo);
+        List<Word> partToWordsToBeCreated = synonymService.getWordsToBeCreated(partToSYNmap, existedWordsFromRepo);
 
         int n = 0;
 
+    }
+
+    @Test
+    void nullForEach() {
+        List<String> strings = null;
+        Assert.assertThrows(NullPointerException.class, () -> strings.forEach(System.out::println));
     }
 }
