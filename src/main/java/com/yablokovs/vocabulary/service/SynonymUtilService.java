@@ -21,9 +21,9 @@ public class SynonymUtilService {
 
     // TODO: 01.11.2022 argument is modified - so need to use a copy !
     // TODO: 03.11.2022 concurrent COLLECTIONS can be used w/out iterator for removing
-    public Set<IdTuple> crossSetsToCoupleEachMemberOfEachSet(Map<String, List<Set<Long>>> synonymsToBeCoupled) {
+    public Set<IdTuple> crossCoupleExistedSetsInternallyAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
 
-        Map<String, List<Set<Long>>> copyOfSynonymsToBeCoupled = Map.copyOf(synonymsToBeCoupled);
+        Map<String, Collection<Set<Long>>> copyOfSynonymsToBeCoupled = Map.copyOf(synonymsToBeCoupled);
 
         Set<IdTuple> idTuples = new HashSet<>();
 
@@ -44,14 +44,14 @@ public class SynonymUtilService {
     }
 
     // TODO: 02/03/23 Check NPE in test
-    public List<IdTuple> coupleExistedANTandSYN(Map<String, List<Set<Long>>> existedSynonymsUniqueSets, Map<String, List<Set<Long>>> existedAntonymsUniqueSets) {
+    public List<IdTuple> coupleExistedANTandSYNAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets, Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets) {
         // важно ли с какой стороны смотреть? нет - тк с какой стороны не начни - будут проверены все пары множеств ->
         // тогда юзаем БД Антонимов - тк менее нагруженная XDDDD
 
         List<IdTuple> idTuples = new ArrayList<>();
 
         existedSynonymsUniqueSets.forEach((part, listOfSynSets) -> {
-            List<Set<Long>> listOfAntSets = existedAntonymsUniqueSets.get(part);
+            Collection<Set<Long>> listOfAntSets = existedAntonymsUniqueSets.get(part);
             if (!CollectionUtils.isEmpty(listOfAntSets)) {
 
                 listOfSynSets.forEach(synSet -> {
@@ -78,7 +78,10 @@ public class SynonymUtilService {
         return coupledIds;
     }
 
-    public List<IdTuple> crossCouple2ListsOfId(Map<String, List<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
+    /*
+    * Can be NEW-NEW or NEW-Existed
+    * */
+    public List<IdTuple> crossCouple2Lists(Map<String, List<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
         List<IdTuple> idTuples = new ArrayList<>();
 
         partToExistedSynonymsToBeCoupledWithNew.forEach((part, existedSynsIds) -> {
@@ -93,7 +96,7 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-    public List<IdTuple> getAllPairsToBeCoupled(Map<String, List<Long>> newSynOrAntPartIds) {
+    public List<IdTuple> crossCoupleNewInternally(Map<String, List<Long>> newSynOrAntPartIds) {
         List<IdTuple> idTuples = new ArrayList<>();
 
         newSynOrAntPartIds.forEach((part, list) -> {
@@ -129,7 +132,7 @@ public class SynonymUtilService {
 
     // 10 FLATMAP of separated SETs to one SET
     // OUTPUT part -> <abcxyz>
-    public Map<String, List<Long>> flatMapNotDuplicatingSetsToOneSet(Map<String, List<Set<Long>>> partToExistedSynonymsNotDublicatingSets) {
+    public Map<String, List<Long>> flatMapNotDuplicatingSetsToOneSet(Map<String, Collection<Set<Long>>> partToExistedSynonymsNotDublicatingSets) {
         return partToExistedSynonymsNotDublicatingSets.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
