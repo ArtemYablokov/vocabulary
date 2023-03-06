@@ -237,28 +237,28 @@ public class SynonymService {
     }
 
 
-    @Deprecated
-    public List<IdTuple> coupleAntonyms(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
-                                        Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets,
-                                        Map<String, List<Long>> newSynonymsWithWord,
-                                        Map<String, List<Long>> newAntonyms) {
-
-        // 1 новые и старые SYN пересекать с WORD уже не нужно
-        // 2 а вот для антонимов имеет смысл пересечь WORD с ними (как старыми, так и новыми)
-        // 3 тогда если положить слово в NEW SYN - оно будет связано и со старыми, и с новыми ANT (а оно уже там и лежит  )
-
-        List<IdTuple> idTuples = synonymUtilService.coupleExistedANTandSYNAsAnt(existedSynonymsUniqueSets, existedAntonymsUniqueSets);
-
-        List<IdTuple> tuples = synonymUtilService.crossCouple2Lists(newSynonymsWithWord, newAntonyms);
-        List<IdTuple> tuples1 = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedSynonymsUniqueSets), newAntonyms);
-        List<IdTuple> tuples2 = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedAntonymsUniqueSets), newSynonymsWithWord);
-
-        List<IdTuple> idTuplesResult = new ArrayList<>();
-        idTuplesResult.addAll(idTuples);
-        idTuplesResult.addAll(tuples);
-        idTuplesResult.addAll(tuples1);
-        idTuplesResult.addAll(tuples2);
-
-        return idTuplesResult;
-    }
+//    @Deprecated
+//    public List<IdTuple> coupleAntonyms(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
+//                                        Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets,
+//                                        Map<String, List<Long>> newSynonymsWithWord,
+//                                        Map<String, List<Long>> newAntonyms) {
+//
+//        // 1 новые и старые SYN пересекать с WORD уже не нужно
+//        // 2 а вот для антонимов имеет смысл пересечь WORD с ними (как старыми, так и новыми)
+//        // 3 тогда если положить слово в NEW SYN - оно будет связано и со старыми, и с новыми ANT (а оно уже там и лежит  )
+//
+//        List<IdTuple> idTuples = synonymUtilService.coupleExistedANTandSYNAsAnt(existedSynonymsUniqueSets, existedAntonymsUniqueSets);
+//
+//        List<IdTuple> tuples = synonymUtilService.crossCouple2Lists(newSynonymsWithWord, newAntonyms);
+//        List<IdTuple> tuples1 = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedSynonymsUniqueSets), newAntonyms);
+//        List<IdTuple> tuples2 = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedAntonymsUniqueSets), newSynonymsWithWord);
+//
+//        List<IdTuple> idTuplesResult = new ArrayList<>();
+//        idTuplesResult.addAll(idTuples);
+//        idTuplesResult.addAll(tuples);
+//        idTuplesResult.addAll(tuples1);
+//        idTuplesResult.addAll(tuples2);
+//
+//        return idTuplesResult;
+//    }
 }

@@ -39,27 +39,31 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-    // TODO: 02/03/23 Check NPE in test
-    public List<IdTuple> coupleExistedANTandSYNAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets, Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets) {
-        // важно ли с какой стороны смотреть? нет - тк с какой стороны не начни - будут проверены все пары множеств ->
-        // тогда юзаем БД Антонимов - тк менее нагруженная XDDDD
-
+    // TODO: 05/03/23 REFACTOR - метод гавно (NPE)
+    public List<IdTuple> coupleExistedANTandSYNAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
+                                                     Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets) {
         List<IdTuple> idTuples = new ArrayList<>();
 
         existedSynonymsUniqueSets.forEach((part, listOfSynSets) -> {
             Collection<Set<Long>> listOfAntSets = existedAntonymsUniqueSets.get(part);
-            if (!CollectionUtils.isEmpty(listOfAntSets)) {
+            if (listOfAntSets.size() > 0 && listOfSynSets.size() > 0) {
 
                 listOfSynSets.forEach(synSet -> {
+                    // TODO: 05/03/23 EACH Syn and ANT sets shouldn't be empty
+                    Long firstOrAnySynonym = synSet.iterator().next();
+                    Set<Long> foundAntonymsBySynonym = synonymDAOService.findAntonymsByPartId(firstOrAnySynonym);
 
-                    // TODO: 02/03/23 move this call to DAO on upper level
-                    Long firstWordFormFoundAntonyms = synonymDAOService.getAnyAntonymForSynSet(synSet);
+                    if (!CollectionUtils.isEmpty(foundAntonymsBySynonym)) {
+                        Long firstWordFormFoundAntonyms = foundAntonymsBySynonym.iterator().next();
 
-                    listOfAntSets.forEach(antSet -> {
-                        if (!antSet.contains(firstWordFormFoundAntonyms)) {
-                            idTuples.addAll(crossCouple2Sets(synSet, antSet));
-                        }
-                    });
+                        listOfAntSets.forEach(antSet -> {
+                            if (!antSet.contains(firstWordFormFoundAntonyms)) {
+                                idTuples.addAll(crossCouple2Sets(synSet, antSet));
+                            }
+                        });
+                    } else {
+                        listOfAntSets.forEach(antSet -> idTuples.addAll(crossCouple2Sets(synSet, antSet)));
+                    }
                 });
             }
         });

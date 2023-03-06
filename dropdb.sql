@@ -14,4 +14,3 @@ drop table if exists tag;
 drop table if exists whensearched;
 drop table if exists word;
 drop table if exists wordrus;
-

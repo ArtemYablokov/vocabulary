@@ -40,7 +40,8 @@ public class SynonymServiceApi {
         Map<String, Collection<String>> mergedSynonymsAndAntonyms = merge2maps(basicSynonymsMap, basicAntonymsMap);
 
         // NOT IMPORTANT maybe split to 2 calls
-        Set<Word> existedSynonymsAndAntonymsFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(mergedSynonymsAndAntonyms));
+        Set<Word> existedSynonymsAndAntonymsFromRepo =
+                wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(mergedSynonymsAndAntonyms));
 
         Map<String, Collection<Part>> existedSynonyms = synonymService.getExistedParts(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo);
         Map<String, Collection<Part>> existedAntonyms = synonymService.getExistedParts(basicAntonymsMap, existedSynonymsAndAntonymsFromRepo);
@@ -53,8 +54,6 @@ public class SynonymServiceApi {
         Map<String, Collection<Set<Long>>> uniqueSetsOfExistedSynonyms = filterToUniqueSets(setsOfExistedSynonymsToBeCoupledAsSynonyms);
         Map<String, Collection<Set<Long>>> uniqueSetsOfExistedAntonyms = filterToUniqueSets(setsOfExistedAntonymsToBeCoupledAsSynonyms);
 
-        coupleExistedANTandSYNasANT(synonymUtilService.coupleExistedANTandSYNAsAnt(uniqueSetsOfExistedSynonyms, uniqueSetsOfExistedAntonyms));
-
         // 1 LVL of Ant
         Map<String, Collection<Set<Long>>> setsOfExistedAntonymsOfSynonyms = getSetOfExistedAntonyms(existedSynonyms);
         Map<String, Collection<Set<Long>>> setsOfExistedAntonymsOfAntonyms = getSetOfExistedAntonyms(existedAntonyms);
@@ -66,6 +65,10 @@ public class SynonymServiceApi {
 
         Map<String, Collection<Set<Long>>> uniqueSetsOfSynonymsToBeCoupledAsSynonyms = filterToUniqueSets(existedSynonymsToBeCoupledAsSynonyms);
         Map<String, Collection<Set<Long>>> uniqueSetsOfAntonymsToBeCoupledAsSynonyms = filterToUniqueSets(existedAntonymsToBeCoupledAsSynonyms);
+
+        // TODO: 05/03/23 сюда приходят uniqueSetsOfAntonymsToBeCoupledAsSynonyms (похоже после merge) непустое и пустое множеств (оно не нужно)
+        coupleExistedANTandSYNasANT(synonymUtilService.coupleExistedANTandSYNAsAnt(uniqueSetsOfSynonymsToBeCoupledAsSynonyms,
+                uniqueSetsOfAntonymsToBeCoupledAsSynonyms));
 
         Map<String, List<Long>> newSynonyms = getNewSynOrAntPartIds(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo);
         Map<String, List<Long>> newSynonymsWithWord = synonymUtilService.addNewWordPartsToNewSynonymsPartIds(word, newSynonyms);
@@ -86,7 +89,10 @@ public class SynonymServiceApi {
         synonymService.coupleAntonymsIds(coupledExistedSynAndExistedAntAsAnt);
     }
 
-    private void coupleAllSynonyms(Map<String, Collection<Set<Long>>> uniqueSetsOfSynonymsToBeCoupledAsSynonyms, Map<String, Collection<Set<Long>>> uniqueSetsOfAntonymsToBeCoupledAsSynonyms, Map<String, List<Long>> newSynonymsWithWord, Map<String, List<Long>> newAntonyms) {
+    private void coupleAllSynonyms(Map<String, Collection<Set<Long>>> uniqueSetsOfSynonymsToBeCoupledAsSynonyms,
+                                   Map<String, Collection<Set<Long>>> uniqueSetsOfAntonymsToBeCoupledAsSynonyms,
+                                   Map<String, List<Long>> newSynonymsWithWord,
+                                   Map<String, List<Long>> newAntonyms) {
         // TODO: 05/03/23 BUG A & B not coupled as SYNONYMS
         // STEP 3 ALL SYNONYMS
         List<IdTuple> coupledAllNewSyns = synonymService.coupleSynonyms(uniqueSetsOfSynonymsToBeCoupledAsSynonyms, newSynonymsWithWord);
@@ -101,8 +107,12 @@ public class SynonymServiceApi {
                                                Map<String, List<Long>> newSynonymsWithWord,
                                                Map<String, List<Long>> newAntonyms) {
         // STEP 1.2 coupled EX-NEW(х2) and NEW-NEW (as ANT)
-        List<IdTuple> crossCoupledAsAntExistedSyn_NewAnt = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(uniqueSetsOfSynonymsToBeCoupledAsSynonyms), newAntonyms);
-        List<IdTuple> crossCoupledAsAntExistedAnt_NewSyn = synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(uniqueSetsOfAntonymsToBeCoupledAsSynonyms), newSynonymsWithWord);
+        List<IdTuple> crossCoupledAsAntExistedSyn_NewAnt =
+                synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(uniqueSetsOfSynonymsToBeCoupledAsSynonyms),
+                        newAntonyms);
+        List<IdTuple> crossCoupledAsAntExistedAnt_NewSyn =
+                synonymUtilService.crossCouple2Lists(synonymUtilService.flatMapNotDuplicatingSetsToOneSet(uniqueSetsOfAntonymsToBeCoupledAsSynonyms),
+                        newSynonymsWithWord);
         List<IdTuple> crossCoupledAsAntNewSyn_NewAnt = synonymUtilService.crossCouple2Lists(newSynonymsWithWord, newAntonyms);
 
         synonymService.coupleAntonymsIds(crossCoupledAsAntExistedSyn_NewAnt);
@@ -132,14 +142,18 @@ public class SynonymServiceApi {
         }));
     }
 
-    private Map<String, Collection<Set<Long>>> getSetOfExistedAntonyms
-            (Map<String, Collection<Part>> existedSynonyms) {
+    private Map<String, Collection<Set<Long>>> getSetOfExistedAntonyms(Map<String, Collection<Part>> existedSynonyms) {
         return existedSynonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+
             Collection<Part> listOfParts = entry.getValue();
             Collection<Set<Long>> synonymsId = new ArrayList<>();
             listOfParts.forEach(part -> {
-                synonymsId.add(new HashSet<>(part.getAntonyms().stream().map(Part::getId).collect(Collectors.toSet())));
+                List<Part> antonyms = part.getAntonyms();
+                if (!CollectionUtils.isEmpty(antonyms)) {
+                    synonymsId.add(antonyms.stream().map(Part::getId).collect(Collectors.toSet()));
+                }
             });
+
             return synonymsId;
         }));
     }
@@ -237,38 +251,39 @@ public class SynonymServiceApi {
      * <p>
      * databaseName -> only to define to which TABLE save IDs
      */
-    @Deprecated
-    public void coupleSynAndAnt(WordFrontEnd wordFrontEnd, Word word) {
-
-        // 1 MAP PART -> SYNs
-        Map<String, Collection<String>> basicPartToSYNmap =
-                synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
-        // 3 EXISTED SYNs from DB
-        Set<Word> existedSYNFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(basicPartToSYNmap));
-
-        Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets = getPartToExistedSynonymsNotDublicatingSets(basicPartToSYNmap, existedSYNFromRepo);
-        Map<String, List<Long>> newSynonyms = getNewSynOrAntPartIds(basicPartToSYNmap, existedSYNFromRepo);
-        Map<String, List<Long>> newSynonymsWithWord = synonymUtilService.addNewWordPartsToNewSynonymsPartIds(word, newSynonyms);
-
-        // TODO: 28/02/23 блоки отличаются только по PartDto::getSynonyms
-
-        // 1 MAP PART -> SYNs
-        Map<String, Collection<String>> basicPartToANTmap =
-                synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getAntonyms);
-        // 3 EXISTED SYNs from DB
-        Set<Word> existedANTFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(basicPartToANTmap));
-
-        // TODO: 28/02/23 мне кажется здесь всегда вызов по синонимам  -- ПРОВЕРИТЬ
-        Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets = getPartToExistedSynonymsNotDublicatingSets(basicPartToANTmap, existedANTFromRepo);
-        Map<String, List<Long>> newAntonyms = getNewSynOrAntPartIds(basicPartToANTmap, existedANTFromRepo);
-
-        List<IdTuple> synonymsToBeCoupled = synonymService.coupleSynonyms(existedSynonymsUniqueSets, newSynonymsWithWord);
-        List<IdTuple> antonymsToBeCoupledAsSynonyms = synonymService.coupleSynonyms(existedAntonymsUniqueSets, newAntonyms);
-        // 100 LAST step - simply couple IDs in MtoM table
-        synonymService.coupleSynonymsIds(synonymsToBeCoupled);
-        synonymService.coupleSynonymsIds(antonymsToBeCoupledAsSynonyms);
-
-        List<IdTuple> antonymsToBeCoupled = synonymService.coupleAntonyms(existedSynonymsUniqueSets, existedAntonymsUniqueSets, newSynonymsWithWord, newAntonyms);
-        synonymService.coupleAntonymsIds(antonymsToBeCoupled);
-    }
+//    @Deprecated
+//    public void coupleSynAndAnt(WordFrontEnd wordFrontEnd, Word word) {
+//
+//        // 1 MAP PART -> SYNs
+//        Map<String, Collection<String>> basicPartToSYNmap =
+//                synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
+//        // 3 EXISTED SYNs from DB
+//        Set<Word> existedSYNFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(basicPartToSYNmap));
+//
+//        Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets = getPartToExistedSynonymsNotDublicatingSets(basicPartToSYNmap, existedSYNFromRepo);
+//        Map<String, List<Long>> newSynonyms = getNewSynOrAntPartIds(basicPartToSYNmap, existedSYNFromRepo);
+//        Map<String, List<Long>> newSynonymsWithWord = synonymUtilService.addNewWordPartsToNewSynonymsPartIds(word, newSynonyms);
+//
+//        // TODO: 28/02/23 блоки отличаются только по PartDto::getSynonyms
+//
+//        // 1 MAP PART -> SYNs
+//        Map<String, Collection<String>> basicPartToANTmap =
+//                synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getAntonyms);
+//        // 3 EXISTED SYNs from DB
+//        Set<Word> existedANTFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(basicPartToANTmap));
+//
+//        // TODO: 28/02/23 мне кажется здесь всегда вызов по синонимам  -- ПРОВЕРИТЬ
+//        Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets = getPartToExistedSynonymsNotDublicatingSets(basicPartToANTmap, existedANTFromRepo);
+//        Map<String, List<Long>> newAntonyms = getNewSynOrAntPartIds(basicPartToANTmap, existedANTFromRepo);
+//
+//        List<IdTuple> synonymsToBeCoupled = synonymService.coupleSynonyms(existedSynonymsUniqueSets, newSynonymsWithWord);
+//        List<IdTuple> antonymsToBeCoupledAsSynonyms = synonymService.coupleSynonyms(existedAntonymsUniqueSets, newAntonyms);
+//        // 100 LAST step - simply couple IDs in MtoM table
+//        synonymService.coupleSynonymsIds(synonymsToBeCoupled);
+//        synonymService.coupleSynonymsIds(antonymsToBeCoupledAsSynonyms);
+//
+//        List<IdTuple> antonymsToBeCoupled = synonymService.coupleAntonyms(existedSynonymsUniqueSets, existedAntonymsUniqueSets, newSynonymsWithWord,
+//                newAntonyms);
+//        synonymService.coupleAntonymsIds(antonymsToBeCoupled);
+//    }
 }
