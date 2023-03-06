@@ -52,7 +52,7 @@ public class WordController {
 
         wordService.saveNewWord(word);
 
-        synonymServiceApi.coupleSynAndAnt(wordFrontEnd, word);
+        synonymServiceApi.coupleSynAndAntNewImplementation(wordFrontEnd, word);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

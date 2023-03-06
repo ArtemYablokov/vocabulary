@@ -18,26 +18,22 @@ public class SynonymUtilService {
         this.synonymDAOService = synonymDAOService;
     }
 
-
-    // TODO: 01.11.2022 argument is modified - so need to use a copy !
-    // TODO: 03.11.2022 concurrent COLLECTIONS can be used w/out iterator for removing
     public Set<IdTuple> crossCoupleExistedSetsInternallyAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
-
-        Map<String, Collection<Set<Long>>> copyOfSynonymsToBeCoupled = Map.copyOf(synonymsToBeCoupled);
-
         Set<IdTuple> idTuples = new HashSet<>();
 
-        copyOfSynonymsToBeCoupled.forEach((part, remainingSets) -> {
-            Iterator<Set<Long>> iterator = remainingSets.iterator();
+        Map<String, List<Set<Long>>> setToListMapped =
+                synonymsToBeCoupled.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().toList()));
 
-            while (iterator.hasNext()) {
-                Set<Long> currentSet = iterator.next();
-                iterator.remove();
+        setToListMapped.forEach((part, remainingSets) -> {
 
-                currentSet.forEach(headId ->
-                        remainingSets.forEach(childIdSet ->
-                                childIdSet.forEach(childId ->
-                                        idTuples.add(new IdTuple(headId, childId)))));
+            for (int i = 0; i < remainingSets.size() - 1; i++) {
+                Set<Long> currentSet = remainingSets.get(i);
+                for (Long currentId : currentSet) {
+                    for (int j = i + 1; j < remainingSets.size(); j++) {
+                        Set<Long> remainSet = remainingSets.get(j);
+                        remainSet.forEach(remainId -> idTuples.add(new IdTuple(currentId, remainId)));
+                    }
+                }
             }
         });
         return idTuples;
@@ -79,8 +75,8 @@ public class SynonymUtilService {
     }
 
     /*
-    * Can be NEW-NEW or NEW-Existed
-    * */
+     * Can be NEW-NEW or NEW-Existed
+     * */
     public List<IdTuple> crossCouple2Lists(Map<String, List<Long>> partToExistedSynonymsToBeCoupledWithNew, Map<String, List<Long>> newSynOrAntPartIds) {
         List<IdTuple> idTuples = new ArrayList<>();
 
