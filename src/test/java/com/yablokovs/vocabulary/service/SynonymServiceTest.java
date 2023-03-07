@@ -122,7 +122,7 @@ class SynonymServiceTest {
         sets.add(Set.of(4L, 41L));
         uniqueSetsOfExistingSets.put("verb", sets);
 
-        Set<IdTuple> actual = synonymUtilService.crossCoupleExistedSetsInternallyAsSyn(uniqueSetsOfExistingSets);
+        Set<IdTuple> actual = synonymUtilService.crossCoupleInternalExistedSetsAsSyn(uniqueSetsOfExistingSets);
 
         Set<IdTuple> expected = new HashSet<>(
                 Set.of(new IdTuple(1L, 3L),

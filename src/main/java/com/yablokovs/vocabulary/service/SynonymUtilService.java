@@ -18,7 +18,7 @@ public class SynonymUtilService {
         this.synonymDAOService = synonymDAOService;
     }
 
-    public Set<IdTuple> crossCoupleExistedSetsInternallyAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
+    public Set<IdTuple> crossCoupleInternalExistedSetsAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
         Set<IdTuple> idTuples = new HashSet<>();
 
         Map<String, List<Set<Long>>> setToListMapped =
@@ -40,7 +40,7 @@ public class SynonymUtilService {
     }
 
     // TODO: 05/03/23 REFACTOR - метод гавно (NPE)
-    public List<IdTuple> coupleExistedANTandSYNAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
+    public List<IdTuple> coupleExistedAntAndSynAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
                                                      Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets) {
         List<IdTuple> idTuples = new ArrayList<>();
 
@@ -70,7 +70,6 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-
     private List<IdTuple> crossCouple2Sets(Set<Long> synSet, Set<Long> antSet) {
         List<IdTuple> coupledIds = new ArrayList<>();
         synSet.forEach(syn ->
@@ -96,7 +95,7 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-    public List<IdTuple> crossCoupleNewInternally(Map<String, List<Long>> newSynOrAntPartIds) {
+    public List<IdTuple> crossCoupleInternallyNewAsSyn(Map<String, List<Long>> newSynOrAntPartIds) {
         List<IdTuple> idTuples = new ArrayList<>();
 
         newSynOrAntPartIds.forEach((part, list) -> {
@@ -135,8 +134,7 @@ public class SynonymUtilService {
     public Map<String, List<Long>> flatMapNotDuplicatingSetsToOneSet(Map<String, Collection<Set<Long>>> partToExistedSynonymsNotDublicatingSets) {
         return partToExistedSynonymsNotDublicatingSets.entrySet()
                 .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().stream().flatMap(Collection::stream).toList()));
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().flatMap(Collection::stream).toList()));
     }
 
 }
