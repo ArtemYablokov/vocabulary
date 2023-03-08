@@ -1,7 +1,7 @@
 package com.yablokovs.vocabulary.mdto.request.mapper;
 
 import com.yablokovs.vocabulary.mdto.request.PartDto;
-import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
+import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.model.Part;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,12 +21,12 @@ public abstract class PartMapper {
     public abstract PartDto toPartDto(Part part);
 
     @SynonymsQualifier
-    public List<SynonymOrAntonymStringHolder> mapSynonyms(List<Part> synonyms) {
-        return synonyms.stream().map(s -> new SynonymOrAntonymStringHolder(s.getWord().getName())).collect(Collectors.toList());
+    public List<StringHolder> mapSynonyms(List<Part> synonyms) {
+        return synonyms.stream().map(s -> new StringHolder(s.getWord().getName())).collect(Collectors.toList());
     }
 
     @AntonymsQualifier
-    public List<SynonymOrAntonymStringHolder> mapAntonyms(List<Part> synonyms) {
-        return synonyms.stream().map(s -> new SynonymOrAntonymStringHolder(s.getWord().getName())).collect(Collectors.toList());
+    public List<StringHolder> mapAntonyms(List<Part> synonyms) {
+        return synonyms.stream().map(s -> new StringHolder(s.getWord().getName())).collect(Collectors.toList());
     }
 }

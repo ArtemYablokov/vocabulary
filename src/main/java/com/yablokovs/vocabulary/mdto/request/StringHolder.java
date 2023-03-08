@@ -11,10 +11,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SynonymOrAntonymStringHolder {
+public class StringHolder {
     private String name;
 
-    public SynonymOrAntonymStringHolder(String name) {
+    public StringHolder(String name) {
         this.name = name;
     }
 }

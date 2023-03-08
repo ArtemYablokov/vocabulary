@@ -1,16 +1,15 @@
 package com.yablokovs.vocabulary.service;
 
 import com.yablokovs.vocabulary.mdto.request.PartDto;
-import com.yablokovs.vocabulary.mdto.request.SynonymOrAntonymStringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
+import com.yablokovs.vocabulary.model.Part;
 import com.yablokovs.vocabulary.model.Word;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.yablokovs.vocabulary.repo.SynonymsRepo.DatabaseName;
+import java.util.stream.Stream;
 
 
 /**
@@ -20,56 +19,109 @@ import static com.yablokovs.vocabulary.repo.SynonymsRepo.DatabaseName;
 public class SynonymServiceApi {
 
     private final SynonymService synonymService;
+    private final SynonymUtilService synonymUtilService;
     private final WordService wordService;
 
-    public SynonymServiceApi(SynonymService synonymService, WordService wordService) {
+    public SynonymServiceApi(SynonymService synonymService, SynonymUtilService synonymUtilService, WordService wordService) {
         this.synonymService = synonymService;
+        this.synonymUtilService = synonymUtilService;
         this.wordService = wordService;
     }
 
-    public void coupleSynOrAntsForNewWordFromRequest(WordFrontEnd wordFrontEnd,
-                                                     Word word,
-                                                     Function<PartDto, List<SynonymOrAntonymStringHolder>> synonymsOrAntonymsRetriever,
-                                                     DatabaseName databaseName) {
+    public void coupleSynAndAntNewImplementation(WordFrontEnd wordFrontEnd, Word word) {
 
-        // TODO: 03.11.2022 corner case when there is no synonyms
-        Map<String, Set<String>> partOfSpeechToSynOrAnt = synonymService.getAllSynOrAntStringSortedByPartOfSpeech(wordFrontEnd, synonymsOrAntonymsRetriever);
+        Map<String, Collection<String>> basicSynonymsMap = synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getSynonyms);
+        Map<String, Collection<String>> basicAntonymsMap = synonymService.getBasicMapOfPartToSynOrAnt(wordFrontEnd, PartDto::getAntonyms);
 
-        Set<String> unitedSynOrAntFromAllParts = partOfSpeechToSynOrAnt.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-        // проверить что сюда приходят WORDS - только с PARTS???
-        // нет - приходит вся глубина вложенности...
-        Set<Word> wordsFromRepo = wordService.findAllWordsWithPartsBySynOrAntStrings(unitedSynOrAntFromAllParts);
+        Set<Word> existedSynonymsAndAntonymsFromRepo =
+                wordService.findAllWordsWithPartsBySynOrAntStrings(flatMapAllSynonymsToOneSet(merge2maps(basicSynonymsMap, basicAntonymsMap)));
 
-        Map<String, List<Long>> existedSynOrAnts = synonymService.getExistedSynonymsIds(partOfSpeechToSynOrAnt, wordsFromRepo);
+        Map<String, Collection<Part>> existedSynonyms = synonymService.getExistedParts(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo);
+        Map<String, Collection<Part>> existedAntonyms = synonymService.getExistedParts(basicAntonymsMap, existedSynonymsAndAntonymsFromRepo);
 
-        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(partOfSpeechToSynOrAnt, wordsFromRepo);
+        Map<String, Collection<Set<Long>>> uniqueSetsOfSynonymsWithAntOfAnt = getUniqueSetsOfSyn_AntWithAntOfAnt_Syn(existedSynonyms, existedAntonyms);
+        Map<String, Collection<Set<Long>>> uniqueSetsOfAntonymsWithAntOfSyn = getUniqueSetsOfSyn_AntWithAntOfAnt_Syn(existedAntonyms, existedSynonyms);
 
-        List<Word> wordsToBeUpdatedWithNewParts = synonymService.getWordsToBeUpdatedWithNewParts(partOfSpeechToSynOrAnt, wordsFromRepo);
+        Map<String, List<Long>> newSynonymsIncludingWord =
+                synonymUtilService.addNewWordPartsToNewSynonymsPartIds(word, getNewSynOrAntPartIds(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo));
+        Map<String, List<Long>> newAntonyms = getNewSynOrAntPartIds(basicAntonymsMap, existedSynonymsAndAntonymsFromRepo);
+
+        List<IdTuple> antonymsToIdTuples =synonymService.coupleAntonymsToIdTuples(uniqueSetsOfSynonymsWithAntOfAnt, uniqueSetsOfAntonymsWithAntOfSyn,
+                newSynonymsIncludingWord, newAntonyms);
+        synonymService.coupleAntonymsIds(antonymsToIdTuples);
+
+        // TODO: 06/03/23 service get as arg it's own output - not cool
+        synonymService.coupleSynonymsIds(synonymService.coupleSynonymsToIdTuples(uniqueSetsOfSynonymsWithAntOfAnt, newSynonymsIncludingWord));
+        synonymService.coupleSynonymsIds(synonymService.coupleSynonymsToIdTuples(uniqueSetsOfAntonymsWithAntOfSyn, newAntonyms));
+    }
+
+    private Map<String, Collection<Set<Long>>> getUniqueSetsOfSyn_AntWithAntOfAnt_Syn(Map<String, Collection<Part>> existedSynonyms,
+                                                                                      Map<String, Collection<Part>> existedAntonyms) {
+        Map<String, Collection<Set<Long>>> setsOfExistedSynonyms = mapSetOfExistedSynonymsPartToId(existedSynonyms);
+        Map<String, Collection<Set<Long>>> setsOfExistedAntonymsOfAntonyms = mapSetOfExistedAntonymsPartToId(existedAntonyms);
+        Map<String, Collection<Set<Long>>> existedSynonymsToBeCoupledAsSynonyms = merge2maps(setsOfExistedSynonyms, setsOfExistedAntonymsOfAntonyms);
+        return filterToUniqueSets(existedSynonymsToBeCoupledAsSynonyms);
+    }
+
+    // TODO: 06/03/23 UTIL
+    private static Map<String, Collection<Set<Long>>> filterToUniqueSets(Map<String, Collection<Set<Long>>> setsOfExistedSynonymsToBeCoupledAsSynonyms) {
+        return setsOfExistedSynonymsToBeCoupledAsSynonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                entry.getValue().stream().distinct().collect(Collectors.toList())));
+    }
+
+
+    private Map<String, Collection<Set<Long>>> mapSetOfExistedSynonymsPartToId(Map<String, Collection<Part>> existedSynonyms) {
+        return existedSynonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            Collection<Part> listOfParts = entry.getValue();
+            Collection<Set<Long>> synonymsId = new ArrayList<>();
+            listOfParts.forEach(part -> {
+                Set<Long> synonymPartsId = new HashSet<>();
+                synonymPartsId.add(part.getId());
+                synonymPartsId.addAll(part.getSynonyms().stream().map(Part::getId).collect(Collectors.toSet()));
+                synonymsId.add(synonymPartsId);
+            });
+            return synonymsId;
+        }));
+    }
+
+    private Map<String, Collection<Set<Long>>> mapSetOfExistedAntonymsPartToId(Map<String, Collection<Part>> existedAntonyms) {
+        return existedAntonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+
+            Collection<Part> listOfParts = entry.getValue();
+            Collection<Set<Long>> synonymsId = new ArrayList<>();
+            listOfParts.forEach(part -> {
+                List<Part> antonyms = part.getAntonyms();
+                if (!CollectionUtils.isEmpty(antonyms)) {
+                    synonymsId.add(antonyms.stream().map(Part::getId).collect(Collectors.toSet()));
+                }
+            });
+
+            return synonymsId;
+        }));
+    }
+
+    // TODO: 06/03/23 UTIL
+    private <T> Map<String, Collection<T>> merge2maps(Map<String, Collection<T>> allAddedSynonyms, Map<String, Collection<T>> allAddedAntonyms) {
+        Map<String, Collection<T>> merged = new HashMap<>(allAddedAntonyms);
+        allAddedSynonyms.forEach((part, synonyms) -> {
+            merged.merge(part, synonyms, (ant, syn) -> Stream.concat(ant.stream(), syn.stream()).collect(Collectors.toSet()));
+        });
+
+        return merged;
+    }
+
+    public Map<String, List<Long>> getNewSynOrAntPartIds(Map<String, Collection<String>> basicPartToSYNANTmap, Set<Word> existedSYNANTFromRepo) {
+
+        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(basicPartToSYNANTmap, existedSYNANTFromRepo);
+        List<Word> wordsToBeUpdatedWithNewParts = synonymService.getWordsToBeUpdatedWithNewParts(basicPartToSYNANTmap, existedSYNANTFromRepo);
 
         List<Word> savedWords = wordService.saveAllNewWords(wordsToBeCreated);
         List<Word> updatedWords = wordService.updateAllWords(wordsToBeUpdatedWithNewParts);
 
+        return synonymService.getPartIdsFromSavedWords(basicPartToSYNANTmap, Stream.concat(savedWords.stream(), updatedWords.stream()).toList());
+    }
 
-        List<Word> wordsToGetNewPartIdsFrom = new ArrayList<>();
-        wordsToGetNewPartIdsFrom.addAll(savedWords);
-        wordsToGetNewPartIdsFrom.addAll(updatedWords);
-
-        Map<String, List<Long>> newSynOrAntPartIds = synonymService.getNewPartIdsFromSavedWords(wordsToGetNewPartIdsFrom, partOfSpeechToSynOrAnt);
-
-
-        // TODO: 20.11.2022 remove ALL COLLECTION MODIFICATION to helper service - to ease a burden on SynonymService
-        synonymService.addNewWordPartsToNewSynonymsPartIds(word, newSynOrAntPartIds);
-
-        Map<String, List<Set<Long>>> partToExistedSynonymsUniqueSets = synonymService.filterExistedSynonymsToUniqueSets(partOfSpeechToSynOrAnt.keySet(), existedSynOrAnts, databaseName);
-        Map<String, Set<Long>> partToExistedSynonymsToBeCoupledWithNew = synonymService.getExistedSynonymsToBeCoupledWithNew(partToExistedSynonymsUniqueSets);
-
-        // TODO: 01.11.2022 argument is modified - so need to pass a copy !
-        Set<IdTuple> existedSynonymsToBeCoupled = synonymService.getPairsOfExistedSynonymsToBeCoupled(partToExistedSynonymsUniqueSets);
-        Set<IdTuple> existedSynonymsToNewToBeCoupled = synonymService.getExistedSynonymsToNewToBeCoupled(partToExistedSynonymsToBeCoupledWithNew, newSynOrAntPartIds);
-        List<IdTuple> newSynonymsToBeCoupled = synonymService.getNewSynonymsToBeCoupled(newSynOrAntPartIds);
-
-        synonymService.coupleSynonymsIds(existedSynonymsToBeCoupled, databaseName);
-        synonymService.coupleSynonymsIds(existedSynonymsToNewToBeCoupled, databaseName);
-        synonymService.coupleSynonymsIds(newSynonymsToBeCoupled, databaseName);
+    private List<String> flatMapAllSynonymsToOneSet(Map<String, Collection<String>> basicPartToSYNmap) {
+        return basicPartToSYNmap.values().stream().flatMap(Collection::stream).toList();
     }
 }

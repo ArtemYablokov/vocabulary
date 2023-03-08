@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-public class SynonymsRepo {
+public class SynonymsRequestBuileder {
 
     @PersistenceContext
     EntityManager entityManager;
@@ -24,11 +24,13 @@ public class SynonymsRepo {
     @Autowired
     DataSource dataSource;
 
+
+
     // TODO: 31.10.2022 move to SynonymsRepo
     @SneakyThrows
 //    @Transactional why connection.prepareStatement doesn’t require @Transaction while EntityManager Does, even with INSERT
     // because each statement executed in separate @Transaction
-    public Set<Long> findSynonymsByPartId(Long id, DatabaseName databaseName) {
+    public Set<Long> findSynonymsOrAntonymsByPartId(Long id, DatabaseName databaseName) {
 
         Set<Long> ids = new HashSet<>();
         String other_id = getOther_id(databaseName);

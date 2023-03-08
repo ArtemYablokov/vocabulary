@@ -5,10 +5,7 @@ import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.repo.WordRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class WordService implements WordServiceInterface {
@@ -78,7 +75,7 @@ public class WordService implements WordServiceInterface {
         return wordRepository.findByName(syn);
     }
 
-    public Set<Word> findAllWordsWithPartsBySynOrAntStrings(Set<String> synonyms) {
+    public Set<Word> findAllWordsWithPartsBySynOrAntStrings(Collection<String> synonyms) {
         return wordRepository.findAllByNameIn(synonyms);
     }
 
