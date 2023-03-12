@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,7 +45,7 @@ public class Word {
     LocalDateTime createdAt;
 
     @LastModifiedDate
-    Timestamp updatedAt;
+    LocalDateTime updatedAt;
 
     //    @Embedded 'Embedded' attribute type should not be a container
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)

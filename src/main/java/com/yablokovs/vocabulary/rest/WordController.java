@@ -35,7 +35,7 @@ public class WordController {
     @GetMapping("/find")
     public ResponseEntity<List<WordFrontEnd>> findWord(@RequestParam String prefix) {
 
-        List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix);
+        List<Word> allWordsByPrefix = wordService.getAllWordsByPrefix(prefix.trim());
 
         // TODO: 20.11.2022 necessary to use mapping from PART to String for Synonyms - because of Synonym RECURSION
         List<WordFrontEnd> wordResponse = allWordsByPrefix.stream().map(wordMapper::toWordResponse).toList();

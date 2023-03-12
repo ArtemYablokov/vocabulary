@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class WhenSearched {
     Word word;
 
     @Column
-    Timestamp when;
+    LocalDateTime when;
 
     @Override
     public String toString() {

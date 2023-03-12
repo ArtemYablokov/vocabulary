@@ -11,7 +11,11 @@ import java.util.List;
 public class WordFrontEnd {
 
     private String name;
-
+    private Long numberOfSearches;
     private List<PartDto> parts;
 
+    private List<StringHolder> tags;
+    private String lastSearched;
+    private String createdAt;
+    private String partOfSpeechList;
 }

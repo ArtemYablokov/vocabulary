@@ -50,8 +50,9 @@ public class UnitTest {
         uniqueSetsOfExistedSynonymsToBeCoupledAsSynonyms.put("a", List.of(Set.of(1L, 2L), Set.of(2L, 1L), Set.of(1L, 2L, 3L), Set.of(1L, 3L)));
 
 
-        Map<String, List<Set<Long>>> collect = uniqueSetsOfExistedSynonymsToBeCoupledAsSynonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
-                entry.getValue().stream().distinct().collect(Collectors.toList())));
+        Map<String, List<Set<Long>>> collect =
+                uniqueSetsOfExistedSynonymsToBeCoupledAsSynonyms.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                        entry.getValue().stream().distinct().collect(Collectors.toList())));
 
 
         List<String> strings = null;
