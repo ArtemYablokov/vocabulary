@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class UnitTest {
 
 
-    SynonymService synonymService = new SynonymService(null, null);
+    SynonymService synonymService = new SynonymService(null);
 
     @Test
     void getWordsToBeCreated() {

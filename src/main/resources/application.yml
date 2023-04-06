@@ -16,10 +16,10 @@ application:
       driverClassName: org.h2.Driver
   postgres:
     datasource:
-      url: jdbc:postgresql://host.docker.internal:5432/vocabulary
+#      url: jdbc:postgresql://host.docker.internal:5432/vocabulary
       username: artem
       password:
-#      url: jdbc:postgresql://localhost:5432/vocabulary
+      url: jdbc:postgresql://localhost:5432/vocabulary
 #      username: vocabulary
 #      password: vocabulary
       driverClassName: org.postgresql.Driver

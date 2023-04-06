@@ -26,12 +26,12 @@ public class SynonymDAOService {
     }
 
     // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
-    public void saveSynIdTuple(Collection<IdTuple> idTuples) {
+    public void saveSynonymIdTuple(Collection<IdTuple> idTuples) {
         idTuples.forEach(idTuple -> synonymsRequestBuileder.createReference(idTuple.getChild(), idTuple.getParent(), SynonymsRequestBuileder.DatabaseName.SYNONYM));
     }
 
     // TODO: 20.11.2022 refactor to INSERT MULTIPLE RAWS in a time
-    public void saveAntIdTuple(Collection<IdTuple> idTuples) {
+    public void saveAntonymIdTuple(Collection<IdTuple> idTuples) {
         idTuples.forEach(idTuple -> synonymsRequestBuileder.createReference(idTuple.getChild(), idTuple.getParent(), SynonymsRequestBuileder.DatabaseName.ANTONYM));
     }
 
