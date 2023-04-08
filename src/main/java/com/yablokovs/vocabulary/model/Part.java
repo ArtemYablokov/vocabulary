@@ -51,8 +51,16 @@ public class Part {
 
     // Associations marked as mappedBy must not define database mappings like @JoinTable or @JoinColumn
     @ManyToMany
-    @JoinTable(name = "rus_eng_synonym")
+    @JoinTable(name = "rus_eng_synonym",
+            joinColumns = @JoinColumn(name = "part_eng_id"),
+            inverseJoinColumns = @JoinColumn(name = "word_rus_id"))
     List<WordRus> synonymsRus = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "rus_eng_antonym",
+            joinColumns = @JoinColumn(name = "part_eng_id"),
+            inverseJoinColumns = @JoinColumn(name = "word_rus_id"))
+    List<WordRus> antonymsRus = new ArrayList<>();
 
 
     public Part(String name) {

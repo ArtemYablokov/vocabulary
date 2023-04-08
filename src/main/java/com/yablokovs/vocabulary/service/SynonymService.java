@@ -20,11 +20,9 @@ public class SynonymService {
 
     private final SynonymUtilService synonymUtilService;
 
-    private final SynonymDAOService synonymDAOService;
 
-    public SynonymService(SynonymUtilService synonymUtilService, SynonymDAOService synonymDAOService) {
+    public SynonymService(SynonymUtilService synonymUtilService) {
         this.synonymUtilService = synonymUtilService;
-        this.synonymDAOService = synonymDAOService;
     }
 
     public Map<String, Collection<String>> getBasicMapOfPartToSynOrAnt(WordFrontEnd wordFrontEnd,
@@ -50,24 +48,10 @@ public class SynonymService {
         return partOfSpeechToSynonym;
     }
 
-    private boolean idExistsInList(List<Set<Long>> list, Long id) {
-        return list.stream().anyMatch(set -> set.contains(id));
-    }
-
-    public void coupleSynonymsIds(Collection<IdTuple> idTuples) {
-        if (idTuples.isEmpty()) return;
-        synonymDAOService.saveSynIdTuple(idTuples);
-    }
-
-    public void coupleAntonymsIds(Collection<IdTuple> idTuples) {
-        if (idTuples.isEmpty()) return;
-        synonymDAOService.saveAntIdTuple(idTuples);
-    }
-
-    public Map<String, Collection<Part>> getExistedParts(Map<String, Collection<String>> basicPartToSynOrAntMap, Set<Word> wordsFromRepo) {
+    public Map<String, Collection<Part>> getExistedParts(Map<String, Collection<String>> basicPartToSyn_AntMap, Set<Word> wordsFromRepo) {
         Map<String, Collection<Part>> partToExistedSynOrAntIds = new HashMap<>();
 
-        basicPartToSynOrAntMap.forEach((partOfSpeech, synOrArts) -> {
+        basicPartToSyn_AntMap.forEach((partOfSpeech, synOrArts) -> {
             List<Part> existedSynOrAntIds = new ArrayList<>();
 
             synOrArts.forEach(synOrAnt -> {
@@ -149,21 +133,21 @@ public class SynonymService {
         return newSynonymsPartIds;
     }
 
-    public List<IdTuple> coupleSynonymsToIdTuples(Map<String, Collection<Set<Long>>> partToExistedSynonymsNotDublicatingSets,
+    public List<IdTuple> coupleSynonymsToIdTuples(Map<String, Collection<Set<Long>>> uniqueSynonymsSets,
                                                   Map<String, List<Long>> newSynonymsPartIdsWithWord) {
         // 11a couple existed SETs among
         // a-x a-y a-z, b = same, c = same
         Set<IdTuple> existedSynonymsToBeCoupled =
-                synonymUtilService.crossCoupleInternalExistedSetsAsSyn(partToExistedSynonymsNotDublicatingSets);
+                synonymUtilService.crossCoupleExistedSetsAsSyn(uniqueSynonymsSets);
         // 11b couple all existed with all new
         // each abcxyz with each new SYNs
         List<IdTuple> existedSynonymsWithNewToBeCoupled =
                 synonymUtilService.crossCouple2Lists(
-                        synonymUtilService.flatMapNotDuplicatingSetsToOneSet(partToExistedSynonymsNotDublicatingSets), newSynonymsPartIdsWithWord);
+                        synonymUtilService.flatMapNotDuplicatingSetsToOneSet(uniqueSynonymsSets), newSynonymsPartIdsWithWord);
         // 11c couple all new among each other
         // simply all NEW SYNs among each other
         List<IdTuple> newSynonymsToBeCoupled =
-                synonymUtilService.crossCoupleInternallyNewAsSyn(newSynonymsPartIdsWithWord);
+                synonymUtilService.crossCoupleMembersOfList(newSynonymsPartIdsWithWord);
 
         List<IdTuple> idTuplesResult = new ArrayList<>();
         idTuplesResult.addAll(existedSynonymsToBeCoupled);
@@ -173,12 +157,13 @@ public class SynonymService {
         return idTuplesResult;
     }
 
-    public List<IdTuple> coupleAntonymsToIdTuples(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
-                                                  Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets,
-                                                  Map<String, List<Long>> newSynonymsWithWord,
-                                                  Map<String, List<Long>> newAntonyms) {
+    public List<IdTuple> coupleSynonymsAndAntonymsAsAntonyms(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
+                                                             Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets,
+                                                             Map<String, List<Long>> newSynonymsWithWord,
+                                                             Map<String, List<Long>> newAntonyms) {
 
         List<IdTuple> idTuples = synonymUtilService.coupleExistedAntAndSynAsAnt(existedSynonymsUniqueSets, existedAntonymsUniqueSets);
+
         // TODO: 06/03/23 service get as arg it's own output - not cool
         List<IdTuple> tuples1 = synonymUtilService.crossCouple2Lists(
                 synonymUtilService.flatMapNotDuplicatingSetsToOneSet(existedSynonymsUniqueSets), newAntonyms);

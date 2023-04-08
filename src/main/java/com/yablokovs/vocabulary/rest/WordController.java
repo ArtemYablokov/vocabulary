@@ -4,7 +4,7 @@ import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
 import com.yablokovs.vocabulary.mdto.request.mapper.WordMapper;
 import com.yablokovs.vocabulary.model.Word;
 import com.yablokovs.vocabulary.service.ExternalService;
-import com.yablokovs.vocabulary.service.SynonymServiceApi;
+import com.yablokovs.vocabulary.service.SynonymServiceConductor;
 import com.yablokovs.vocabulary.service.WordServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,14 @@ public class WordController {
 
     // TODO: 22.10.2022 с помощью имени бина можно задавать имплементацию (кроме @Primary и @Qualifier)
     private final WordServiceInterface wordService;
-    private final SynonymServiceApi synonymServiceApi;
+    private final SynonymServiceConductor synonymServiceConductor;
     private final WordMapper wordMapper;
 
     private final ExternalService externalService;
 
-    public WordController(WordServiceInterface wordService, SynonymServiceApi synonymServiceApi, WordMapper wordMapper, ExternalService externalService) {
+    public WordController(WordServiceInterface wordService, SynonymServiceConductor synonymServiceConductor, WordMapper wordMapper, ExternalService externalService) {
         this.wordService = wordService;
-        this.synonymServiceApi = synonymServiceApi;
+        this.synonymServiceConductor = synonymServiceConductor;
         this.wordMapper = wordMapper;
         this.externalService = externalService;
     }
@@ -52,7 +52,7 @@ public class WordController {
 
         wordService.saveNewWord(word);
 
-        synonymServiceApi.coupleSynAndAntNewImplementation(wordFrontEnd, word);
+        synonymServiceConductor.coupleSynAndAntNewImplementation(wordFrontEnd, word);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

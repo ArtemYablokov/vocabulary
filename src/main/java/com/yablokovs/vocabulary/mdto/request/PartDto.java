@@ -12,7 +12,8 @@ public class PartDto {
     private List<DefinitionDto> definitions;
     private List<StringHolder> synonyms;
     private List<StringHolder> antonyms;
-//    private List<SynonymOrAntonymStringHolder> rusantonyms;
+    private List<StringHolder> rusSynonyms;
+    private List<StringHolder> rusAntonyms;
 
     public PartDto(String name) {
         this.name = name;

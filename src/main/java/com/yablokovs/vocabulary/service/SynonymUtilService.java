@@ -11,20 +11,20 @@ import java.util.stream.Collectors;
 @Service
 public class SynonymUtilService {
 
-
+    // TODO: 4/6/23 only one usage of DAO
     private final SynonymDAOService synonymDAOService;
 
     public SynonymUtilService(SynonymDAOService synonymDAOService) {
         this.synonymDAOService = synonymDAOService;
     }
 
-    public Set<IdTuple> crossCoupleInternalExistedSetsAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
+    public Set<IdTuple> crossCoupleExistedSetsAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
         Set<IdTuple> idTuples = new HashSet<>();
 
-        Map<String, List<Set<Long>>> setToListMapped =
+        Map<String, List<Set<Long>>> collectionToOrderedListMapped =
                 synonymsToBeCoupled.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().toList()));
 
-        setToListMapped.forEach((part, remainingSets) -> {
+        collectionToOrderedListMapped.forEach((part, remainingSets) -> {
 
             for (int i = 0; i < remainingSets.size() - 1; i++) {
                 Set<Long> currentSet = remainingSets.get(i);
@@ -46,18 +46,17 @@ public class SynonymUtilService {
 
         existedSynonymsUniqueSets.forEach((part, listOfSynSets) -> {
             Collection<Set<Long>> listOfAntSets = existedAntonymsUniqueSets.get(part);
-            if (listOfAntSets.size() > 0 && listOfSynSets.size() > 0) {
+            if (!CollectionUtils.isEmpty(listOfAntSets)) {
 
                 listOfSynSets.forEach(synSet -> {
-                    // TODO: 05/03/23 EACH Syn and ANT sets shouldn't be empty
-                    Long firstOrAnySynonym = synSet.iterator().next();
-                    Set<Long> foundAntonymsBySynonym = synonymDAOService.findAntonymsByPartId(firstOrAnySynonym);
+                    Long anySynonym = synSet.iterator().next();
+                    Set<Long> foundAntonymsBySynonym = synonymDAOService.findAntonymsByPartId(anySynonym);
 
-                    if (!CollectionUtils.isEmpty(foundAntonymsBySynonym)) {
-                        Long firstWordFormFoundAntonyms = foundAntonymsBySynonym.iterator().next();
+                    if (synonymHasAntonyms(foundAntonymsBySynonym)) {
+                        Long anyFoundAntonym = foundAntonymsBySynonym.iterator().next();
 
                         listOfAntSets.forEach(antSet -> {
-                            if (!antSet.contains(firstWordFormFoundAntonyms)) {
+                            if (!antSet.contains(anyFoundAntonym)) {
                                 idTuples.addAll(crossCouple2Sets(synSet, antSet));
                             }
                         });
@@ -68,6 +67,10 @@ public class SynonymUtilService {
             }
         });
         return idTuples;
+    }
+
+    private boolean synonymHasAntonyms(Set<Long> foundAntonymsBySynonym) {
+        return !CollectionUtils.isEmpty(foundAntonymsBySynonym);
     }
 
     private List<IdTuple> crossCouple2Sets(Set<Long> synSet, Set<Long> antSet) {
@@ -95,7 +98,7 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-    public List<IdTuple> crossCoupleInternallyNewAsSyn(Map<String, List<Long>> newSynOrAntPartIds) {
+    public List<IdTuple> crossCoupleMembersOfList(Map<String, List<Long>> newSynOrAntPartIds) {
         List<IdTuple> idTuples = new ArrayList<>();
 
         newSynOrAntPartIds.forEach((part, list) -> {
@@ -131,8 +134,8 @@ public class SynonymUtilService {
 
     // 10 FLATMAP of separated SETs to one SET
     // OUTPUT part -> <abcxyz>
-    public Map<String, List<Long>> flatMapNotDuplicatingSetsToOneSet(Map<String, Collection<Set<Long>>> partToExistedSynonymsNotDublicatingSets) {
-        return partToExistedSynonymsNotDublicatingSets.entrySet()
+    public Map<String, List<Long>> flatMapNotDuplicatingSetsToOneSet(Map<String, Collection<Set<Long>>> uniqueSynonymsSets) {
+        return uniqueSynonymsSets.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().flatMap(Collection::stream).toList()));
     }
