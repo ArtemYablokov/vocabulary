@@ -22,14 +22,14 @@ public class WhenSearched {
     Word word;
 
     @Column
-    LocalDateTime when;
+    LocalDateTime whenSearched;
 
     @Override
     public String toString() {
         return "WhenSearched{" +
                 "id=" + id +
                 ", word=" + word +
-                ", createdAt=" + when +
+                ", createdAt=" + whenSearched +
                 '}';
     }
 }

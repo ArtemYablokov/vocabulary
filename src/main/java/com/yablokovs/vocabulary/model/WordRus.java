@@ -24,6 +24,21 @@ public class WordRus {
     @ManyToMany(mappedBy = "synonymsRus")
     List<Part> synonymsEng = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "antonymsRus")
+    List<Part> antonymsEng = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "rus_synonym",
+            joinColumns = @JoinColumn(name = "word_rus_id"),
+            inverseJoinColumns = @JoinColumn(name = "synonym_rus_id"))
+    List<WordRus> synonymsRus = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "rus_antonym",
+            joinColumns = @JoinColumn(name = "word_rus_id"),
+            inverseJoinColumns = @JoinColumn(name = "antonym_rus_id"))
+    List<WordRus> antonymsRus = new ArrayList<>();
+
     @Override
     public String toString() {
         return "WordRus{" +

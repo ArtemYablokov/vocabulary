@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * API pattern - to hide more complex implementation
  */
 @Service
-public class SynonymServiceApi {
+public class SynonymServiceConductor {
 
     private final SynonymService synonymService;
     private final SynonymUtilService synonymUtilService;
@@ -24,7 +24,7 @@ public class SynonymServiceApi {
 
     private final SynonymDAOService synonymDAOService;
 
-    public SynonymServiceApi(SynonymService synonymService, SynonymUtilService synonymUtilService, WordService wordService, SynonymDAOService synonymDAOService) {
+    public SynonymServiceConductor(SynonymService synonymService, SynonymUtilService synonymUtilService, WordService wordService, SynonymDAOService synonymDAOService) {
         this.synonymService = synonymService;
         this.synonymUtilService = synonymUtilService;
         this.wordService = wordService;
