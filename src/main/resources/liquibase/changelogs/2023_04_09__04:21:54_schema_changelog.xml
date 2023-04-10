@@ -1,0 +1,230 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="artem (generated)" id="1681014115575-1">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="50" maxValue="9223372036854775807" minValue="1" sequenceName="sequence_generator" startValue="1"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-2">
+        <createTable tableName="definition">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="definition_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="part_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-3">
+        <createTable tableName="definition_phrase">
+            <column name="definitions_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phrases_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-4">
+        <createTable tableName="part">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="part_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="word_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-5">
+        <createTable tableName="part_antonym">
+            <column name="antonym_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="part_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-6">
+        <createTable tableName="part_synonym">
+            <column name="synonym_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="part_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-7">
+        <createTable tableName="phrase">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="phrase_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-8">
+        <createTable tableName="prefix">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="prefix_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-9">
+        <createTable tableName="prefixes_words">
+            <column name="prefix_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="prefixes_words_pkey"/>
+            </column>
+            <column name="word_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="prefixes_words_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-10">
+        <createTable tableName="rus_antonym">
+            <column name="word_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="antonym_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-11">
+        <createTable tableName="rus_eng_antonym">
+            <column name="part_eng_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-12">
+        <createTable tableName="rus_eng_synonym">
+            <column name="part_eng_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="word_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-13">
+        <createTable tableName="rus_synonym">
+            <column name="word_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="synonym_rus_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-14">
+        <createTable tableName="tag">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tag_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-15">
+        <createTable tableName="tag_word">
+            <column name="tags_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="words_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-16">
+        <createTable tableName="whensearched">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="whensearched_pkey"/>
+            </column>
+            <column name="whensearched" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="word_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-17">
+        <createTable tableName="word">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="word_pkey"/>
+            </column>
+            <column name="createdat" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="numberofsearches" type="BIGINT"/>
+            <column name="updatedat" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-18">
+        <createTable tableName="wordrus">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="wordrus_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="part_of_speech" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-19">
+        <addForeignKeyConstraint baseColumnNames="word_rus_id" baseTableName="rus_antonym" constraintName="fk29xvnegg78398wsduy274csw0" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-20">
+        <addForeignKeyConstraint baseColumnNames="part_id" baseTableName="part_synonym" constraintName="fk355fjl77r27plcoaq1vnh88oq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-21">
+        <addForeignKeyConstraint baseColumnNames="part_id" baseTableName="definition" constraintName="fk36rwm0j30g6xmempw2no6gqr3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-22">
+        <addForeignKeyConstraint baseColumnNames="part_id" baseTableName="part_antonym" constraintName="fk6vibki281ic6676kb4o2acga7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-23">
+        <addForeignKeyConstraint baseColumnNames="part_eng_id" baseTableName="rus_eng_synonym" constraintName="fk96ebixhb31bnydtvp1w3f8v1d" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-24">
+        <addForeignKeyConstraint baseColumnNames="synonym_rus_id" baseTableName="rus_synonym" constraintName="fkb1kgxm4mjmi3x8wb5btns9m7v" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-25">
+        <addForeignKeyConstraint baseColumnNames="word_id" baseTableName="prefixes_words" constraintName="fkcl0njvapfqij7pos0drn3q4e7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="word" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-26">
+        <addForeignKeyConstraint baseColumnNames="phrases_id" baseTableName="definition_phrase" constraintName="fkg71xbqm110t2blm1ya64ppqa8" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="phrase" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-27">
+        <addForeignKeyConstraint baseColumnNames="word_rus_id" baseTableName="rus_eng_antonym" constraintName="fkh5ytol8b8ur96as57wqkwxcip" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-28">
+        <addForeignKeyConstraint baseColumnNames="tags_id" baseTableName="tag_word" constraintName="fkhngyj013g8xdo4hcujq2a2ctq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tag" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-29">
+        <addForeignKeyConstraint baseColumnNames="part_eng_id" baseTableName="rus_eng_antonym" constraintName="fkhxjgdn5kqo9j5qjkxg36cs1eg" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-30">
+        <addForeignKeyConstraint baseColumnNames="synonym_id" baseTableName="part_synonym" constraintName="fkihbtb3ksv6lpu6gc1cxye5e9o" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-31">
+        <addForeignKeyConstraint baseColumnNames="definitions_id" baseTableName="definition_phrase" constraintName="fkiqu44cwo1yecaf57ikqoqr8x7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="definition" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-32">
+        <addForeignKeyConstraint baseColumnNames="prefix_id" baseTableName="prefixes_words" constraintName="fklkwwie0kdx87b4iql588wcrfo" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="prefix" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-33">
+        <addForeignKeyConstraint baseColumnNames="word_rus_id" baseTableName="rus_eng_synonym" constraintName="fkns78suhgy1842w6fwb5jxqta3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-34">
+        <addForeignKeyConstraint baseColumnNames="antonym_id" baseTableName="part_antonym" constraintName="fkog91ov7y622ede3v0jkk4dywj" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="part" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-35">
+        <addForeignKeyConstraint baseColumnNames="word_id" baseTableName="part" constraintName="fkrbn9rh3rd9sto9tiftf64184y" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="word" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-36">
+        <addForeignKeyConstraint baseColumnNames="antonym_rus_id" baseTableName="rus_antonym" constraintName="fkrj8492whsy09gte5bx0wqsos7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-37">
+        <addForeignKeyConstraint baseColumnNames="word_rus_id" baseTableName="rus_synonym" constraintName="fksb2a6bhmdiqqvbknbxtly05li" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="wordrus" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-38">
+        <addForeignKeyConstraint baseColumnNames="word_id" baseTableName="whensearched" constraintName="fkslu3juvsxcfji419q02wi0uer" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="word" validate="true"/>
+    </changeSet>
+    <changeSet author="artem (generated)" id="1681014115575-39">
+        <addForeignKeyConstraint baseColumnNames="words_id" baseTableName="tag_word" constraintName="fkt8p5ub88fdq3xc3se2432xvhp" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="word" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
