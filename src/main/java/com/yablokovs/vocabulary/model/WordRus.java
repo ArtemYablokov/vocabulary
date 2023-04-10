@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class WordRus {
+public class WordRus implements PartAndWordRus {
 
     @Id
     // TODO: 20.10.2022 generators
@@ -20,6 +20,9 @@ public class WordRus {
     private Long id;
     @Column(name = "name")
     private String name;
+
+    @Column(name = "part_of_speech")
+    private String partOfSpeech;
 
     @ManyToMany(mappedBy = "synonymsRus")
     List<Part> synonymsEng = new ArrayList<>();
@@ -31,13 +34,13 @@ public class WordRus {
     @JoinTable(name = "rus_synonym",
             joinColumns = @JoinColumn(name = "word_rus_id"),
             inverseJoinColumns = @JoinColumn(name = "synonym_rus_id"))
-    List<WordRus> synonymsRus = new ArrayList<>();
+    List<WordRus> synonyms = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "rus_antonym",
             joinColumns = @JoinColumn(name = "word_rus_id"),
             inverseJoinColumns = @JoinColumn(name = "antonym_rus_id"))
-    List<WordRus> antonymsRus = new ArrayList<>();
+    List<WordRus> antonyms = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -46,4 +49,20 @@ public class WordRus {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    // TODO: 4/9/23 was a bug - lomboks access methods wasn't seen by MVN
+//    @Override
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    @Override
+//    public List<WordRus> getSynonyms() {
+//        return synonyms;
+//    }
+//
+//    @Override
+//    public List<WordRus> getAntonyms() {
+//        return antonyms;
+//    }
 }

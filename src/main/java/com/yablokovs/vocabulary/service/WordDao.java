@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class WordService implements WordServiceInterface {
+public class WordDao implements WordServiceInterface {
 
     private final WordRepository wordRepository;
     private final PrefixService prefixService;
 
-    public WordService(WordRepository wordRepository, PrefixService prefixService) {
+    public WordDao(WordRepository wordRepository, PrefixService prefixService) {
         this.wordRepository = wordRepository;
         this.prefixService = prefixService;
     }

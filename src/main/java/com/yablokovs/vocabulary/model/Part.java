@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Part {
+public class Part implements PartAndWordRus {
 
     @Id
     // TODO: 20.10.2022 generators
@@ -75,4 +75,61 @@ public class Part {
                 ", word=" + word +
                 '}';
     }
+
+
+    // TODO: 4/9/23 was a bug - lomboks access methods wasn't seen by MVN
+//    @Override
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    @Override
+//    public List<Part> getSynonyms() {
+//        return synonyms;
+//    }
+//
+//    @Override
+//    public List<Part> getAntonyms() {
+//        return antonyms;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public Word getWord() {
+//        return word;
+//    }
+//
+//    public List<WordRus> getSynonymsRus() {
+//        return synonymsRus;
+//    }
+//
+//    public void setSynonymsRus(List<WordRus> synonymsRus) {
+//        this.synonymsRus = synonymsRus;
+//    }
+//
+//    public List<WordRus> getAntonymsRus() {
+//        return antonymsRus;
+//    }
+//
+//    public void setAntonymsRus(List<WordRus> antonymsRus) {
+//        this.antonymsRus = antonymsRus;
+//    }
+//
+//    public void setWord(Word word) {
+//        this.word = word;
+//    }
+//
+//    public List<Definition> getDefinitions() {
+//        return definitions;
+//    }
+//
+//    public void setName(String part) {
+//        this.name = name;
+//    }
+//
+//    public void setDefinitions(List<Definition> definitions) {
+//        this.definitions = definitions;
+//    }
 }

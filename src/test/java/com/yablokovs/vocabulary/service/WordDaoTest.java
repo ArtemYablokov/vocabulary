@@ -25,7 +25,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceConfig.class})
 //@RunWith(JUnitPlatform.class) // java.lang.NoClassDefFoundError: org/junit/jupiter/api/extension/ScriptEvaluationException
-public class WordServiceTest {
+public class WordDaoTest {
 
     // TODO: 16.10.2022 learn differences
     @PersistenceContext
@@ -36,17 +36,17 @@ public class WordServiceTest {
     ConfigurableApplicationContext configurableApplicationContext;
 
     @Autowired
-    WordService wordService;
+    WordDao wordDao;
 
     @Test
     public void testSaveWord() {
         Word word = new Word();
         word.setName("from test");
-        wordService.saveNewWord(word);
+        wordDao.saveNewWord(word);
 
         //entityManager.persist(word);
 
-        List<Word> allWords = wordService.findAllWords();
+        List<Word> allWords = wordDao.findAllWords();
         Assert.assertEquals(1, allWords.size());
         Assert.assertEquals("from test", allWords.get(0).getName());
     }
