@@ -8,6 +8,13 @@ import java.util.*;
 @Service
 public class WordRusService {
 
+    private final WordRusDao wordRusDao;
+    private final WordRusServiceFirstLayer wordRusServiceFirstLayer;
+
+    public WordRusService(WordRusDao wordRusDao, WordRusServiceFirstLayer wordRusServiceFirstLayer) {
+        this.wordRusDao = wordRusDao;
+        this.wordRusServiceFirstLayer = wordRusServiceFirstLayer;
+    }
 
     // TODO: 4/8/23 UTIL
     public Map<String, Collection<WordRus>> getExistedWordRus(Map<String, Collection<String>> basicPartToSyn_AntMap, Set<WordRus> wordsFromRepo) {
@@ -27,5 +34,12 @@ public class WordRusService {
         });
 
         return partToExistedSynOrAntIds;
+    }
+
+
+    public Map<String, List<Long>> getNewSyn_AntWordRusIds(Map<String, Collection<String>> basicRusSynMap, Set<WordRus> wordsFromRepo) {
+        List<WordRus> wordsToBeCreated = wordRusServiceFirstLayer.getWordsToBeCreated(basicRusSynMap, wordsFromRepo);
+        List<WordRus> wordsCreated = wordRusDao.saveAll(wordsToBeCreated);
+        return wordRusServiceFirstLayer.getWordRusIdsFromSavedWords(basicRusSynMap, wordsCreated);
     }
 }

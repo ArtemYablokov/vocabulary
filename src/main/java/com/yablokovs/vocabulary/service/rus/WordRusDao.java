@@ -18,4 +18,8 @@ public class WordRusDao {
     public Set<WordRus> findAllRusWordsBySynOrAntStrings(Collection<String> synonyms) {
         return wordRusRepository.findAllByNameIn(synonyms);
     }
+
+    public List<WordRus> saveAll(List<WordRus> wordsToBeCreated) {
+        return wordRusRepository.saveAll(wordsToBeCreated);
+    }
 }

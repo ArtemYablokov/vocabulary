@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 
 /**
@@ -23,8 +22,8 @@ import java.util.stream.Stream;
 public class SynonymServiceConductor {
 
     private final SynonymService synonymService;
-    private final SynonymUtilService synonymUtilService;
     private final WordDao wordDao;
+    private final SynonymUtilService synonymUtilService;
 
     private final WordRusDao wordRusDao;
     private final WordRusService wordRusService;
@@ -64,9 +63,14 @@ public class SynonymServiceConductor {
         // EXISTED with ANT of ANT
         Map<String, Collection<Set<Long>>> uniqueSetsOfSynRusWithAntOfAnt = firstLevelService.getUniqueSetsOfSyn_AntWithAntOfAnt_Syn(existedSynRus, existedAntRus);
         Map<String, Collection<Set<Long>>> uniqueSetsOfAntRusWithAntOfSyn = firstLevelService.getUniqueSetsOfSyn_AntWithAntOfAnt_Syn(existedAntRus, existedSynRus);
-
-
         // TODO: 4/9/23 tested correctly created unique sets of syn + ant of ant. (and sets of ant + ant of syn )
+
+
+        Map<String, List<Long>> newSynRus = wordRusService.getNewSyn_AntWordRusIds(basicRusSynMap, existedSynAndAntRusFromRepo);
+        Map<String, List<Long>> newAntRus = wordRusService.getNewSyn_AntWordRusIds(basicRusAntMap, existedSynAndAntRusFromRepo);
+        // TODO: 4/10/23 TEST !!!
+
+
 
         // ENG
 
@@ -85,8 +89,8 @@ public class SynonymServiceConductor {
 
         // NEW
         Map<String, List<Long>> newSynonymsIncludingWord = synonymUtilService.addNewWordPartsToNewSynonymsPartIds(
-                word, getNewSyn_AntPartIds(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo));
-        Map<String, List<Long>> newAntonyms = getNewSyn_AntPartIds(basicAntonymsMap, existedSynonymsAndAntonymsFromRepo);
+                word, firstLevelService.getNewSyn_AntPartIds(basicSynonymsMap, existedSynonymsAndAntonymsFromRepo));
+        Map<String, List<Long>> newAntonyms = firstLevelService.getNewSyn_AntPartIds(basicAntonymsMap, existedSynonymsAndAntonymsFromRepo);
 
         // PREPARED TUPLES
         List<IdTuple> antonymsToIdTuples = synonymService.coupleSynonymsAndAntonymsAsAntonyms(
@@ -97,18 +101,6 @@ public class SynonymServiceConductor {
         synonymDAOService.saveAntonymIdTuple(antonymsToIdTuples);
         synonymDAOService.saveSynonymIdTuple(coupledSynonymsAsSynonyms);
         synonymDAOService.saveSynonymIdTuple(coupledAntonymsAsSynonyms);
-    }
-
-    // TODO: 06/03/23 UTIL
-    public Map<String, List<Long>> getNewSyn_AntPartIds(Map<String, Collection<String>> basicPartToSyn_AntMap, Set<Word> existedSyn_AntFromRepo) {
-
-        List<Word> wordsToBeCreated = synonymService.getWordsToBeCreated(basicPartToSyn_AntMap, existedSyn_AntFromRepo);
-        List<Word> wordsToBeUpdatedWithNewParts = synonymService.getWordsToBeUpdatedWithNewParts(basicPartToSyn_AntMap, existedSyn_AntFromRepo);
-
-        List<Word> savedWords = wordDao.saveAllNewWords(wordsToBeCreated);
-        List<Word> updatedWords = wordDao.updateAllWords(wordsToBeUpdatedWithNewParts);
-
-        return synonymService.getPartIdsFromSavedWords(basicPartToSyn_AntMap, Stream.concat(savedWords.stream(), updatedWords.stream()).toList());
     }
 
     public List<String> flatMapAllSynonymsToOneSet(Map<String, Collection<String>> basicPartToSYNmap) {
