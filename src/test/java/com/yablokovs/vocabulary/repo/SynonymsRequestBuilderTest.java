@@ -7,16 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.sql.DataSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
-class SynonymsRequestBuilederTest {
+class SynonymsRequestBuilderTest {
 
     @Autowired
     PartRepository partRepository;
 
     @Autowired
-    SynonymsRequestBuileder synonymsRequestBuileder;
+    SynonymsRequestBuilder synonymsRequestBuilder;
 
     @Autowired
     DataSource dataSource;
