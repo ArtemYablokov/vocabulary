@@ -6,14 +6,18 @@ import com.yablokovs.vocabulary.model.Word;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class UnitTest {
 
-
-    SynonymService synonymService = new SynonymService(null);
+    SecondLevelService secondLevelService = new SecondLevelService(null, null);
 
     @Test
     void getWordsToBeCreated() {
@@ -27,7 +31,7 @@ public class UnitTest {
         partToSYNmap.put("verb", verbs);
         partToSYNmap.put("nouns", nouns);
 
-        List<Word> partToWordsToBeCreated = synonymService.getWordsToBeCreated(partToSYNmap, existedWordsFromRepo);
+        List<Word> partToWordsToBeCreated = secondLevelService.getWordsToBeCreated(partToSYNmap, existedWordsFromRepo);
 
         int n = 0;
 

@@ -2,20 +2,40 @@ package com.yablokovs.vocabulary.service;
 
 
 import com.yablokovs.vocabulary.model.Word;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SynonymUtilService {
 
-    // TODO: 4/6/23 only one usage of DAO
-    private final SynonymDAOService synonymDAOService;
+    public Map<String, Collection<Set<Long>>> filterToUniqueSets(Map<String, Collection<Set<Long>>> setsOfExistedSynonymsToBeCoupledAsSynonyms) {
+        return setsOfExistedSynonymsToBeCoupledAsSynonyms.entrySet()
+                .stream()
+                .collect(Collectors
+                        .toMap(Map.Entry::getKey,
+                                entry -> entry.getValue()
+                                        .stream()
+                                        .distinct()
+                                        .collect(Collectors.toList())));
+    }
 
-    public SynonymUtilService(SynonymDAOService synonymDAOService) {
-        this.synonymDAOService = synonymDAOService;
+    // TODO: 06/03/23 UTIL
+    public <T> Map<String, Collection<T>> merge2maps(Map<String, Collection<T>> allAddedSynonyms, Map<String, Collection<T>> allAddedAntonyms) {
+        Map<String, Collection<T>> merged = new HashMap<>(allAddedAntonyms);
+        allAddedSynonyms.forEach((part, synonyms) -> {
+            merged.merge(part, synonyms, (ant, syn) -> Stream.concat(ant.stream(), syn.stream()).collect(Collectors.toSet()));
+        });
+
+        return merged;
     }
 
     public Set<IdTuple> crossCoupleExistedSetsAsSyn(Map<String, Collection<Set<Long>>> synonymsToBeCoupled) {
@@ -39,41 +59,7 @@ public class SynonymUtilService {
         return idTuples;
     }
 
-    // TODO: 05/03/23 REFACTOR - метод гавно (NPE)
-    public List<IdTuple> coupleExistedAntAndSynAsAnt(Map<String, Collection<Set<Long>>> existedSynonymsUniqueSets,
-                                                     Map<String, Collection<Set<Long>>> existedAntonymsUniqueSets) {
-        List<IdTuple> idTuples = new ArrayList<>();
-
-        existedSynonymsUniqueSets.forEach((part, listOfSynSets) -> {
-            Collection<Set<Long>> listOfAntSets = existedAntonymsUniqueSets.get(part);
-            if (!CollectionUtils.isEmpty(listOfAntSets)) {
-
-                listOfSynSets.forEach(synSet -> {
-                    Long anySynonym = synSet.iterator().next();
-                    Set<Long> foundAntonymsBySynonym = synonymDAOService.findAntonymsByPartId(anySynonym);
-
-                    if (synonymHasAntonyms(foundAntonymsBySynonym)) {
-                        Long anyFoundAntonym = foundAntonymsBySynonym.iterator().next();
-
-                        listOfAntSets.forEach(antSet -> {
-                            if (!antSet.contains(anyFoundAntonym)) {
-                                idTuples.addAll(crossCouple2Sets(synSet, antSet));
-                            }
-                        });
-                    } else {
-                        listOfAntSets.forEach(antSet -> idTuples.addAll(crossCouple2Sets(synSet, antSet)));
-                    }
-                });
-            }
-        });
-        return idTuples;
-    }
-
-    private boolean synonymHasAntonyms(Set<Long> foundAntonymsBySynonym) {
-        return !CollectionUtils.isEmpty(foundAntonymsBySynonym);
-    }
-
-    private List<IdTuple> crossCouple2Sets(Set<Long> synSet, Set<Long> antSet) {
+    public List<IdTuple> crossCouple2Sets(Set<Long> synSet, Set<Long> antSet) {
         List<IdTuple> coupledIds = new ArrayList<>();
         synSet.forEach(syn ->
                 antSet.forEach(ant -> coupledIds.add(new IdTuple(syn, ant))));

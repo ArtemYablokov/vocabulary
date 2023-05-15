@@ -15,10 +15,8 @@ import java.util.Objects;
 public class Phrase {
 
     @Id
-    // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
-//    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "phrase_id_seq")
+    @SequenceGenerator(name = "phrase_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name")

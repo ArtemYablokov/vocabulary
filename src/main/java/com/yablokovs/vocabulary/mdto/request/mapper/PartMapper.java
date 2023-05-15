@@ -14,6 +14,8 @@ public abstract class PartMapper {
 
     @Mapping(ignore = true, target = "synonyms")
     @Mapping(ignore = true, target = "antonyms")
+    @Mapping(ignore = true, target = "synonymsRus")
+    @Mapping(ignore = true, target = "antonymsRus")
     public abstract Part toPart(PartDto partDto);
 
     @Mapping(source = "synonyms", target = "synonyms", qualifiedBy = SynonymsQualifier.class)

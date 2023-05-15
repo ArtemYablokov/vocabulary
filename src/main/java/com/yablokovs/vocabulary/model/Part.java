@@ -13,13 +13,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Part {
+public class Part implements PartAndWordRus {
 
     @Id
     // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
-//    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "part_id_seq")
+    @SequenceGenerator(name = "part_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name")
@@ -75,4 +74,5 @@ public class Part {
                 ", word=" + word +
                 '}';
     }
+
 }

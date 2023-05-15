@@ -17,5 +17,8 @@ public class WordFrontEnd {
     private List<StringHolder> tags;
     private String lastSearched;
     private String createdAt;
+
+    // TODO: 4/7/23 вот это здесь зачем ??? - скорее всего для отображения в общем виде слова
+    // проверить со стороны фронта
     private String partOfSpeechList;
 }

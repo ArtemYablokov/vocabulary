@@ -3,7 +3,7 @@ package com.yablokovs.vocabulary.service;
 import com.yablokovs.vocabulary.mdto.request.PartDto;
 import com.yablokovs.vocabulary.mdto.request.StringHolder;
 import com.yablokovs.vocabulary.mdto.request.WordFrontEnd;
-import com.yablokovs.vocabulary.repo.SynonymsRequestBuileder;
+import com.yablokovs.vocabulary.repo.SynonymsRequestBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,17 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
 @SpringBootTest
 class SynonymServiceTest {
     @MockBean
-    SynonymsRequestBuileder synonymsRequestBuileder;
-
-    @Autowired
-    SynonymService synonymService;
+    SynonymsRequestBuilder synonymsRequestBuilder;
 
     @Autowired
     SynonymUtilService synonymUtilService;
