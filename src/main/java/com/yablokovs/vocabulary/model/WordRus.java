@@ -49,19 +49,4 @@ public class WordRus implements PartAndWordRus {
                 '}';
     }
 
-    // TODO: 4/9/23 was a bug - lomboks access methods wasn't seen by MVN
-//    @Override
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    @Override
-//    public List<WordRus> getSynonyms() {
-//        return synonyms;
-//    }
-//
-//    @Override
-//    public List<WordRus> getAntonyms() {
-//        return antonyms;
-//    }
 }
