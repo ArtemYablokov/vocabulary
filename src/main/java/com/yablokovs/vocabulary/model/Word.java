@@ -25,9 +25,8 @@ import java.util.Set;
 public class Word {
     @Id
     // TODO: 20.10.2022 generators
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
-    @SequenceGenerator(name = "sequence_generator")
-//    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "word_id_seq")
+    @SequenceGenerator(name = "word_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name")
